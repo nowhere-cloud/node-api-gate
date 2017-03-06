@@ -4,8 +4,14 @@ const amqp = require("amqplib");
 const uuid = require("uuid");
 
 module.exports = {
+    /**
+     * Send Message to RabbitMQ
+     * @param  String target Message target
+     * @param  String msg    Message Payload
+     * @return null
+     */
     send: (target, msg) => {
-        amqp.connect(this.AURI).then(
+        amqp.connect(process.env.AMQP_URI).then(
             (conn) => conn.createChannel().then(
             (ch) => {
                 let q = ch.assertQueue(target, {
