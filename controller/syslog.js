@@ -4,49 +4,58 @@ const express = require("express");
 const router = express.Router();
 const uuid = require("uuid/v1");
 const mongoose = require("mongoose");
-const schema = require("../model/syslog-schema");
-const model = mongoose.model("Syslog", schema.schema);
+const Syslog = require("../model/syslog-schema");
 
 /**
  * Mongoose Stuffs
  */
+let db = null;
+let co = false;
 
-mongoose.connect(process.env.MONGODB_URI);
-
-router.get("/get/all", (req, res, next) => {
-    let db = mongoose.connection;
-    db.on("error", (error) => {
-        next(error);
-    }).once("open", () => {
-        model.find({}).cursor().on("data", (doc) => {
-            res.write(JSON.stringify(doc));
-        }).on("end", () => {
-            db.close();
-            res.end();
-        }).on("error", (error) => {
-            db.close();
-            next(error);
-        });
+router.all("*", (req, res, next) => {
+    mongoose.connect(process.env.MONGODB_URI);
+    db = mongoose.connection;
+    db.on("error", (err) => {
+        return next(err);
+    });
+    db.once("open", () => {
+        co = true;
+        return next();
     });
 });
 
-router.get("/get/:id", (req, res, next) => {
-    let db = mongoose.connection;
-    db.on("error", (error) => {
-        next(error);
-    }).once("open", () => {
-        model.findOne({
-            _id: req.params.id
-        }).cursor().on("data", (doc) => {
+router.get("/get/all", (req, res, next) => {
+    if (co) {
+        let stream = model.find({}).stream();
+        stream.on("data", (doc) => {
             res.write(JSON.stringify(doc));
-        }).on("end", () => {
+        }).on("close", () => {
             db.close();
             res.end();
-        }).on("error", (error) => {
+        }).on("error", (err) => {
             db.close();
-            next(error);
+            return next(err);
         });
-    });
+    } else {
+        return next(error);
+    }
+});
+
+router.get("/get/:id", (req, res, next) => {
+    if (co) {
+        let stream = model.findById(req.params.id).stream();
+        stream.on("data", (doc) => {
+            res.write(JSON.stringify(doc));
+        }).on("close", () => {
+            db.close();
+            res.end();
+        }).on("error", (err) => {
+            db.close();
+            return next(err);
+        });
+    } else {
+        return next(error);
+    }
 });
 
 module.exports = router;
