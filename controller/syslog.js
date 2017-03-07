@@ -11,26 +11,28 @@ const model = mongoose.model("Syslog", schema.schema);
  * Mongoose Stuffs
  */
 
+mongoose.connect(process.env.MONGODB_URI);
+
 router.get("/get/all", (req, res, next) => {
-    mongoose.connect(process.env.MONGODB_URI);
-    mongoose.connection.on("error", (error) => {
+    let db = mongoose.connection;
+    db.on("error", (error) => {
         next(error);
     }).once("open", () => {
         model.find({}).cursor().on("data", (doc) => {
             res.write(JSON.stringify(doc));
         }).on("end", () => {
-            mongoose.connection.close();
+            db.close();
             res.end();
         }).on("error", (error) => {
-            mongoose.connection.close();
+            db.close();
             next(error);
         });
     });
 });
 
 router.get("/get/:id", (req, res, next) => {
-    mongoose.connect(process.env.MONGODB_URI);
-    mongoose.connection.on("error", (error) => {
+    let db = mongoose.connection;
+    db.on("error", (error) => {
         next(error);
     }).once("open", () => {
         model.findOne({
@@ -38,10 +40,10 @@ router.get("/get/:id", (req, res, next) => {
         }).cursor().on("data", (doc) => {
             res.write(JSON.stringify(doc));
         }).on("end", () => {
-            mongoose.connection.close();
+            db.close();
             res.end();
         }).on("error", (error) => {
-            mongoose.connection.close();
+            db.close();
             next(error);
         });
     });
