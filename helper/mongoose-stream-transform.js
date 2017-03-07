@@ -6,7 +6,7 @@
  * Transform Mongoose Streamed Array into proper JSON Object String
  * @return String Stringified JSON
  */
-transformer = () => {
+const transformer = () => {
     let first = true;
     return function(data) {
         if (first) {
