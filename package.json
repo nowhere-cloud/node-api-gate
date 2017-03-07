@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www.js",
-    "start-amqp": "node amqp-exec.js"
+    "start-amqp": "node ./helper/amqp-listener.js"
   },
   "dependencies": {
     "amqplib": "^0.5.1",
