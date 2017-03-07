@@ -5,57 +5,44 @@ const router = express.Router();
 const uuid = require("uuid/v1");
 const mongoose = require("mongoose");
 const Syslog = require("../model/syslog-schema");
+const helper_transfn = require("../helper/mongoose-stream-transform");
 
 /**
  * Mongoose Stuffs
  */
-let db = null;
-let co = false;
+mongoose.connect(process.env.MONGODB_URI);
+var db = mongoose.connection;
 
-router.all("*", (req, res, next) => {
-    mongoose.connect(process.env.MONGODB_URI);
-    db = mongoose.connection;
-    db.on("error", (err) => {
+/**
+ * GET DB Stat as Status Check
+ */
+router.get("/", (req, res, next) => {
+    Syslog.collection.stats((err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
+    });
+});
+
+/**
+ * GET All Syslog Records
+ */
+router.get("/all", (req, res, next) => {
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    let stream = Syslog.find({}).lean().cursor(helper_transfn);
+    res.write("[");
+    stream.pipe(res).on("end", res.write("]")).on("error", (err) => {
         return next(err);
     });
-    db.once("open", () => {
-        co = true;
-        return next();
+});
+
+/**
+ * GET one record from Syslog Dataset
+ */
+router.get("/:id", (req, res, next) => {
+    Syslog.findOne({ _id: req.params.id }, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
-});
-
-router.get("/get/all", (req, res, next) => {
-    if (co) {
-        let stream = model.find({}).stream();
-        stream.on("data", (doc) => {
-            res.write(JSON.stringify(doc));
-        }).on("close", () => {
-            db.close();
-            res.end();
-        }).on("error", (err) => {
-            db.close();
-            return next(err);
-        });
-    } else {
-        return next(error);
-    }
-});
-
-router.get("/get/:id", (req, res, next) => {
-    if (co) {
-        let stream = model.findById(req.params.id).stream();
-        stream.on("data", (doc) => {
-            res.write(JSON.stringify(doc));
-        }).on("close", () => {
-            db.close();
-            res.end();
-        }).on("error", (err) => {
-            db.close();
-            return next(err);
-        });
-    } else {
-        return next(error);
-    }
 });
 
 module.exports = router;
