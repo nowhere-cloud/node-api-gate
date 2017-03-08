@@ -8,8 +8,8 @@ const moment = require("moment");
 /* GET home page. */
 router.get("/", function(req, res, next) {
     res.json({
-        "iso": moment().subtract(process.uptime(), "seconds").toISOString(),
-        "seconds": process.uptime()
+        "start_time": moment().subtract(process.uptime().toFixed(0), "seconds").toISOString(),
+        "uptime": process.uptime()
     });
 });
 
