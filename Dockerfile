@@ -2,10 +2,11 @@ FROM node:alpine
 
 WORKDIR /srv
 
-COPY . /srv
+COPY package.json /srv
 
-RUN apk add --no-cache supervisor \
- && npm install --production
+RUN npm install --production
+
+COPY . /srv
 
 ENV MONGODB_URI=mongodb://mongo/nowhere \
     AMQP_URI=amqp://rabbitmq \
@@ -13,4 +14,8 @@ ENV MONGODB_URI=mongodb://mongo/nowhere \
     MYSQL_PASS=nowhere \
     MYSQL_DB=nowhere
 
-ENTRYPOINT ["/usr/bin/supervisord", "-c", "/srv/supervisord.conf"]
+# RUN apk add --no-cache supervisor
+
+ENTRYPOINT ["npm", "start"]
+# Disabled for debug
+# ENTRYPOINT ["/usr/bin/supervisord", "-c", "/srv/supervisord.conf"]

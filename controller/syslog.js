@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const uuid = require("uuid/v1");
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 const Syslog = require("../model/syslog-schema");
 
 /**
@@ -18,6 +19,10 @@ var db = mongoose.connection;
 router.get("/", (req, res, next) => {
     Syslog.collection.stats((err, doc) => {
         if (err) return next(err);
+        // Remove useless Key from doc
+        delete doc.wiredTiger;
+        delete doc.indexDetails;
+        // Render the result
         res.json(doc);
     });
 });
@@ -41,10 +46,11 @@ router.get("/all", (req, res, next) => {
 
 /**
  * GET one record from Syslog Dataset
+ * http://stackoverflow.com/questions/14992123/finding-a-mongodb-document-by-objectid-with-mongoose
  */
 router.get("/:id", (req, res, next) => {
     Syslog.findOne({
-        _id: req.params.id
+        _id: ObjectId.fromString(req.params.id)
     }, (err, doc) => {
         if (err) return next(err);
         res.json(doc);
