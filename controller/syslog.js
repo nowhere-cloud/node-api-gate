@@ -33,7 +33,11 @@ router.get("/", (req, res, next) => {
 router.get("/all", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
-    let stream = Syslog.find({}, null, {sort: {'_id': -1}}).lean().cursor();
+    let stream = Syslog.find({}, null, {
+        sort: {
+            "_id": -1
+        }
+    }).lean().cursor();
     stream.on("data", (doc) => {
         res.write((!(index++) ? "[" : ",") + JSON.stringify(doc));
     }).on("end", () => {
