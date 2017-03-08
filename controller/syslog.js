@@ -33,7 +33,7 @@ router.get("/", (req, res, next) => {
 router.get("/all", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
-    let stream = Syslog.find({}).lean().cursor();
+    let stream = Syslog.find({}, null, {sort: {'_id': -1}}).lean().cursor();
     stream.on("data", (doc) => {
         res.write((!(index++) ? "[" : ",") + JSON.stringify(doc));
     }).on("end", () => {
@@ -50,10 +50,13 @@ router.get("/all", (req, res, next) => {
  */
 router.get("/:id", (req, res, next) => {
     Syslog.findOne({
-        _id: ObjectId.fromString(req.params.id)
+        "_id": ObjectId.fromString(req.params.id)
     }, (err, doc) => {
-        if (err) return next(err);
-        res.json(doc);
+        if (err) {
+            res.write(err);
+            return next(err);
+        }
+        res.write(doc);
     });
 });
 
