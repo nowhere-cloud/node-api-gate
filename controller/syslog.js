@@ -34,9 +34,7 @@ router.get("/all", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({}, null, {
-        sort: {
-            _id: 1
-        }
+        sort: { $natural: -1 }
     }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
@@ -78,9 +76,7 @@ router.get("/serverity/:serverity", (req, res, next) => {
     let stream = Syslog.find({
         serverity: Number(req.params.serverity)
     }, null, {
-        sort: {
-            _id: 1
-        }
+        sort: { $natural: -1 }
     }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
