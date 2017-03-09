@@ -54,9 +54,7 @@ router.get("/all", (req, res, next) => {
  * http://stackoverflow.com/questions/14992123/finding-a-mongodb-document-by-objectid-with-mongoose
  */
 router.get("/id/:id", (req, res, next) => {
-    Syslog.findOne({
-        _id: ObjectId.fromString(req.params.id)
-    }, (err, doc) => {
+    Syslog.findOne(req.params.id, (err, doc) => {
         if (err) {
             res.write(err);
             return next(err);
@@ -74,7 +72,7 @@ router.get("/serverity/:serverity", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({
-        serverity: Number(req.params.serverity)
+        serverity: req.params.serverity
     }, null, {
         sort: { $natural: -1 }
     }).lean().cursor();
