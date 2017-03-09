@@ -35,16 +35,18 @@ router.get("/all", (req, res, next) => {
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({}, null, {
         sort: {
-            _id: -1
+            _id: 1
         }
     }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    }).on("end", () => {
+    });
+    stream.on("close", () => {
         res.write("]");
         res.end();
-    }).on("error", (err) => {
+    });
+    stream.on("error", (err) => {
         return next(err);
     });
 });
@@ -74,19 +76,21 @@ router.get("/serverity/:serverity", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({
-        serverity: isNaN(Number(req.params.serverity)) ? 0 : Number(req.params.serverity)
+        serverity: Number(req.params.serverity)
     }, null, {
         sort: {
-            _id: -1
+            _id: 1
         }
     }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    }).on("end", () => {
+    });
+    stream.on("close", () => {
         res.write("]");
         res.end();
-    }).on("error", (err) => {
+    });
+    stream.on("error", (err) => {
         return next(err);
     });
 });
