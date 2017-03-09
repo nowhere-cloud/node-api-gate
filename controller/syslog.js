@@ -75,18 +75,12 @@ router.get("/id/all", (req, res, next) => {
     });
 });
 
-router.get("/id/:id", pp_json_header, (req, res, next) => {
-    let stream = Syslog.find({
+router.get("/id/:id", (req, res, next) => {
+    Syslog.distinct({
         "_id": qs.escape(req.params.id)
-    }).lean().cursor();
-    stream.on("data", (doc) => {
-        res.write(JSON.stringify(doc));
-    });
-    stream.on("close", () => {
-        res.end();
-    });
-    stream.on("error", (err) => {
-        return next(err);
+    }, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
 
