@@ -35,11 +35,12 @@ router.get("/all", (req, res, next) => {
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({}, null, {
         sort: {
-            "_id": -1
+            _id: -1
         }
     }).lean().cursor();
+    res.write("[");
     stream.on("data", (doc) => {
-        res.write((!(index++) ? "[" : ",") + JSON.stringify(doc));
+        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
     }).on("end", () => {
         res.write("]");
         res.end();
@@ -52,15 +53,41 @@ router.get("/all", (req, res, next) => {
  * GET one record from Syslog Dataset
  * http://stackoverflow.com/questions/14992123/finding-a-mongodb-document-by-objectid-with-mongoose
  */
-router.get("/:id", (req, res, next) => {
+router.get("/id/:id", (req, res, next) => {
     Syslog.findOne({
-        "_id": ObjectId.fromString(req.params.id)
+        _id: ObjectId.fromString(req.params.id)
     }, (err, doc) => {
         if (err) {
             res.write(err);
             return next(err);
         }
         res.write(doc);
+    });
+});
+
+
+/**
+ * GET records from Syslog Dataset by severity
+ * http://stackoverflow.com/questions/14992123/finding-a-mongodb-document-by-objectid-with-mongoose
+ */
+router.get("/serverity/:serverity", (req, res, next) => {
+    let index = 0;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    let stream = Syslog.find({
+        serverity: isNaN(Number(req.params.serverity)) ? 0 : Number(req.params.serverity)
+    }, null, {
+        sort: {
+            _id: -1
+        }
+    }).lean().cursor();
+    res.write("[");
+    stream.on("data", (doc) => {
+        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
+    }).on("end", () => {
+        res.write("]");
+        res.end();
+    }).on("error", (err) => {
+        return next(err);
     });
 });
 
