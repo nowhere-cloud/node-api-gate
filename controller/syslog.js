@@ -34,7 +34,9 @@ router.get("/all", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({}, null, {
-        sort: { $natural: -1 }
+        sort: {
+            $natural: -1
+        }
     }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
@@ -70,7 +72,7 @@ router.get("/id/:id", (req, res, next) => {
  * Get Tags of entries in the Syalog Collection
  */
 router.get("/tag/all", (req, res, next) => {
-    Syslog.distinct("tag",(err, doc) => {
+    Syslog.distinct("tag", (err, doc) => {
         if (err) return next(err);
         res.json(doc);
     });
@@ -84,8 +86,12 @@ router.get("/tag/all", (req, res, next) => {
 router.get("/tag/:tag", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
-    let stream = Syslog.find({ "tag" : req.params.tag }, null, {
-        sort: { $natural: -1 }
+    let stream = Syslog.find({
+        "tag": req.params.tag
+    }, null, {
+        sort: {
+            $natural: -1
+        }
     }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
@@ -104,7 +110,7 @@ router.get("/tag/:tag", (req, res, next) => {
  * Get Tags of entries in the Syalog Collection
  */
 router.get("/hostname/all", (req, res, next) => {
-    Syslog.distinct("hostname",(err, doc) => {
+    Syslog.distinct("hostname", (err, doc) => {
         if (err) return next(err);
         res.json(doc);
     });
@@ -116,8 +122,12 @@ router.get("/hostname/all", (req, res, next) => {
 router.get("/hostname/:hostname", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
-    let stream = Syslog.find({ "hostname" : req.params.hostname }, null, {
-        sort: { $natural: -1 }
+    let stream = Syslog.find({
+        "hostname": req.params.hostname
+    }, null, {
+        sort: {
+            $natural: -1
+        }
     }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
@@ -131,5 +141,45 @@ router.get("/hostname/:hostname", (req, res, next) => {
         return next(err);
     });
 });
+
+/**
+ * Get Facilities of entries in the Syalog Collection
+ */
+router.get("/facility/all", (req, res, next) => {
+    Syslog.distinct("facility", (err, doc) => {
+        if (err) return next(err);
+        // Distinct does not allow sorting, manual interpretion is needed.
+        res.json(doc.sort((a, b) => {
+            return a - b;
+        }));
+    });
+});
+
+/**
+ * GET records from Syslog Dataset by Syslog Facilities
+ */
+router.get("/facility/:facility", (req, res, next) => {
+    let index = 0;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    let stream = Syslog.find({
+        "facility": req.params.facility
+    }, null, {
+        sort: {
+            $natural: -1
+        }
+    }).lean().cursor();
+    res.write("[");
+    stream.on("data", (doc) => {
+        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
+    });
+    stream.on("close", () => {
+        res.write("]");
+        res.end();
+    });
+    stream.on("error", (err) => {
+        return next(err);
+    });
+});
+
 
 module.exports = router;
