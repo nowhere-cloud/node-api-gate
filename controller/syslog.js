@@ -1,10 +1,9 @@
+
 "use strict";
 
 const express = require("express");
 const router = express.Router();
-const uuid = require("uuid/v1");
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 const Syslog = require("../model/syslog-schema");
 const qs = require("querystring");
 
@@ -13,6 +12,14 @@ const qs = require("querystring");
  */
 mongoose.connect(process.env.MONGODB_URI);
 var db = mongoose.connection;
+
+/**
+ * Route Preprocess: Add JSON Header to reduce code dupe
+ */
+const pp_json_header = (req, res, next) => {
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    next();
+};
 
 /**
  * GET DB Stat as Status Check
@@ -31,9 +38,8 @@ router.get("/", (req, res, next) => {
 /**
  * GET All Syslog Records
  */
-router.get("/all", (req, res, next) => {
+router.get("/all", pp_json_header, (req, res, next) => {
     let index = 0;
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({}, null, {
         sort: {
             $natural: -1
@@ -58,16 +64,15 @@ router.get("/all", (req, res, next) => {
  * FIXME
  */
 
-router.get("/id/all", (req, res, next) => {
+router.get("/id/all", pp_json_header, (req, res, next) => {
     Syslog.distinct("_id", (err, doc) => {
         if (err) return next(err);
-        res.json(doc);
+        res.write(doc).end();
     });
 });
 
-router.get("/id/:id", (req, res, next) => {
+router.get("/id/:id", pp_json_header, (req, res, next) => {
     let index = 0;
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({
         "_id": qs.escape(req.params.id)
     }).lean().cursor();
@@ -85,9 +90,8 @@ router.get("/id/:id", (req, res, next) => {
 /**
  * Get Tags of entries in the Syalog Collection
  */
-router.get("/tag/all", (req, res, next) => {
+router.get("/tag/all", pp_json_header, (req, res, next) => {
     let index = 0;
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.distinct("tag").cursor();
     res.write("[");
     stream.on("data", (doc) => {
@@ -107,9 +111,8 @@ router.get("/tag/all", (req, res, next) => {
  * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
  */
 
-router.get("/tag/:tag", (req, res, next) => {
+router.get("/tag/:tag", pp_json_header, (req, res, next) => {
     let index = 0;
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({
         "tag": qs.escape(req.params.tag)
     }, null, {
@@ -133,9 +136,8 @@ router.get("/tag/:tag", (req, res, next) => {
 /**
  * Get Tags of entries in the Syalog Collection
  */
-router.get("/hostname/all", (req, res, next) => {
+router.get("/hostname/all", pp_json_header, (req, res, next) => {
     let index = 0;
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.distinct("hostname").cursor();
     res.write("[");
     stream.on("data", (doc) => {
@@ -153,7 +155,7 @@ router.get("/hostname/all", (req, res, next) => {
 /**
  * GET records from Syslog Dataset by hostname
  */
-router.get("/hostname/:hostname", (req, res, next) => {
+router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({
@@ -179,9 +181,8 @@ router.get("/hostname/:hostname", (req, res, next) => {
 /**
  * Get Facilities of entries in the Syalog Collection
  */
-router.get("/facility/all", (req, res, next) => {
+router.get("/facility/all", pp_json_header, (req, res, next) => {
     let index = 0;
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.distinct("facility").cursor();
     res.write("[");
     stream.on("data", (doc) => {
@@ -199,9 +200,8 @@ router.get("/facility/all", (req, res, next) => {
 /**
  * GET records from Syslog Dataset by Syslog Facilities
  */
-router.get("/facility/:facility", (req, res, next) => {
+router.get("/facility/:facility", pp_json_header, (req, res, next) => {
     let index = 0;
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({
         "facility": qs.escape(req.params.facility)
     }, null, {
