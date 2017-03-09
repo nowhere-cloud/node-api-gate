@@ -64,15 +64,14 @@ router.get("/all", pp_json_header, (req, res, next) => {
  * FIXME
  */
 
-router.get("/id/all", pp_json_header, (req, res, next) => {
+router.get("/id/all", (req, res, next) => {
     Syslog.distinct("_id", (err, doc) => {
         if (err) return next(err);
-        res.write(doc).end();
+        res.json(doc);
     });
 });
 
 router.get("/id/:id", pp_json_header, (req, res, next) => {
-    let index = 0;
     let stream = Syslog.find({
         "_id": qs.escape(req.params.id)
     }).lean().cursor();
@@ -90,19 +89,10 @@ router.get("/id/:id", pp_json_header, (req, res, next) => {
 /**
  * Get Tags of entries in the Syalog Collection
  */
-router.get("/tag/all", pp_json_header, (req, res, next) => {
-    let index = 0;
-    let stream = Syslog.distinct("tag").cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
-        res.write((!(index++) ? "" : ",") + doc);
-    });
-    stream.on("close", () => {
-        res.write("]");
-        res.end();
-    });
-    stream.on("error", (err) => {
-        return next(err);
+router.get("/tag/all", (req, res, next) => {
+    Syslog.distinct("tag", null, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
 
@@ -136,19 +126,10 @@ router.get("/tag/:tag", pp_json_header, (req, res, next) => {
 /**
  * Get Tags of entries in the Syalog Collection
  */
-router.get("/hostname/all", pp_json_header, (req, res, next) => {
-    let index = 0;
-    let stream = Syslog.distinct("hostname").cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
-        res.write((!(index++) ? "" : ",") + doc);
-    });
-    stream.on("close", () => {
-        res.write("]");
-        res.end();
-    });
-    stream.on("error", (err) => {
-        return next(err);
+router.get("/hostname/all", (req, res, next) => {
+    Syslog.distinct("hostname", null, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
 
