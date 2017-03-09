@@ -201,8 +201,8 @@ router.get("/facility/:facility", pp_json_header, (req, res, next) => {
 /**
  * Get Facilities of entries in the Syalog Collection
  */
-router.get("/serverity/all", (req, res, next) => {
-    Syslog.distinct("serverity", null, (err, doc) => {
+router.get("/severity/all", (req, res, next) => {
+    Syslog.distinct("severity", null, (err, doc) => {
         if (err) return next(err);
         res.json(doc);
     });
@@ -211,10 +211,10 @@ router.get("/serverity/all", (req, res, next) => {
 /**
  * GET records from Syslog Dataset by Syslog Facilities
  */
-router.get("/serverity/:facility", pp_json_header, (req, res, next) => {
+router.get("/severity/:severity", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({
-        "serverity": qs.escape(req.params.facility)
+        "severity": qs.escape(req.params.severity)
     }, null, {
         sort: {
             $natural: -1
