@@ -34,7 +34,7 @@ router.get("/", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).cursor();
+    }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -75,23 +75,9 @@ router.get("/id/:id", (req, res, next) => {
  * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
  */
 router.get("/tag", (req, res, next) => {
-    let index = 0;
-    let stream = Syslog.aggregate([{
-        $group: {
-            _id: "$tag", //$region is the column name in collection
-            count: {$sum: 1}
-        }
-    }]).cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
-        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
-        res.write("]");
-        res.end();
-    });
-    stream.on("error", (err) => {
-        return next(err);
+    Syslog.distinct("tag", null, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
 
@@ -103,7 +89,7 @@ router.get("/tag/:tag", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).cursor();
+    }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -120,26 +106,10 @@ router.get("/tag/:tag", pp_json_header, (req, res, next) => {
 /**
  * GET records from Syslog Dataset by hostname
  */
-router.get("/hostname", (req, res, next) => {
-    let index = 0;
-    let stream = Syslog.aggregate([{
-        $group: {
-            _id: "$hostname", //$region is the column name in collection
-            count: {
-                $sum: 1
-            }
-        }
-    }]).cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
-        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
-        res.write("]");
-        res.end();
-    });
-    stream.on("error", (err) => {
-        return next(err);
+router.get("/hostname/all", (req, res, next) => {
+    Syslog.distinct("hostname", null, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
 
@@ -152,7 +122,7 @@ router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).cursor();
+    }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -169,26 +139,10 @@ router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
 /**
  * Get Facilities of entries in the Syalog Collection
  */
-router.get("/facility", (req, res, next) => {
-    let index = 0;
-    let stream = Syslog.aggregate([{
-        $group: {
-            _id: "$facility", //$region is the column name in collection
-            count: {
-                $sum: 1
-            }
-        }
-    }]).cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
-        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
-        res.write("]");
-        res.end();
-    });
-    stream.on("error", (err) => {
-        return next(err);
+router.get("/facility/all", (req, res, next) => {
+    Syslog.distinct("facility", null, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
 
@@ -200,7 +154,7 @@ router.get("/facility/:facility", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).cursor();
+    }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -218,25 +172,9 @@ router.get("/facility/:facility", pp_json_header, (req, res, next) => {
  * Get Serverity of entries in the Syalog Collection
  */
 router.get("/severity", (req, res, next) => {
-    let index = 0;
-    let stream = Syslog.aggregate([{
-        $group: {
-            _id: "$severity", //$region is the column name in collection
-            count: {
-                $sum: 1
-            }
-        }
-    }]).cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
-        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
-        res.write("]");
-        res.end();
-    });
-    stream.on("error", (err) => {
-        return next(err);
+    Syslog.distinct("severity", null, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
 
@@ -248,7 +186,7 @@ router.get("/severity/:severity", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).cursor();
+    }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
