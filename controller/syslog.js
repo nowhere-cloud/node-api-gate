@@ -6,6 +6,7 @@ const uuid = require("uuid/v1");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const Syslog = require("../model/syslog-schema");
+const qs = require("querystring");
 
 /**
  * Mongoose Stuffs
@@ -57,24 +58,47 @@ router.get("/all", (req, res, next) => {
  * FIXME
  */
 
-/*
-router.get("/id/:id", (req, res, next) => {
-    Syslog.findOne({ "_id": ObjectId("58c0f71ca891a2000f27c30e") }, (err, doc) => {
-        if (err) {
-            return next(err);
-        }
-        res.write(doc);
+router.get("/id/all", (req, res, next) => {
+    Syslog.distinct("_id", (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
-*/
+
+router.get("/id/:id", (req, res, next) => {
+    let index = 0;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    let stream = Syslog.find({
+        "_id": qs.escape(req.params.id)
+    }).lean().cursor();
+    stream.on("data", (doc) => {
+        res.write(JSON.stringify(doc));
+    });
+    stream.on("close", () => {
+        res.end();
+    });
+    stream.on("error", (err) => {
+        return next(err);
+    });
+});
 
 /**
  * Get Tags of entries in the Syalog Collection
  */
 router.get("/tag/all", (req, res, next) => {
-    Syslog.distinct("tag", (err, doc) => {
-        if (err) return next(err);
-        res.json(doc);
+    let index = 0;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    let stream = Syslog.distinct("tag").cursor();
+    res.write("[");
+    stream.on("data", (doc) => {
+        res.write((!(index++) ? "" : ",") + doc);
+    });
+    stream.on("close", () => {
+        res.write("]");
+        res.end();
+    });
+    stream.on("error", (err) => {
+        return next(err);
     });
 });
 
@@ -87,7 +111,7 @@ router.get("/tag/:tag", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({
-        "tag": req.params.tag
+        "tag": qs.escape(req.params.tag)
     }, null, {
         sort: {
             $natural: -1
@@ -110,9 +134,19 @@ router.get("/tag/:tag", (req, res, next) => {
  * Get Tags of entries in the Syalog Collection
  */
 router.get("/hostname/all", (req, res, next) => {
-    Syslog.distinct("hostname", (err, doc) => {
-        if (err) return next(err);
-        res.json(doc);
+    let index = 0;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    let stream = Syslog.distinct("hostname").cursor();
+    res.write("[");
+    stream.on("data", (doc) => {
+        res.write((!(index++) ? "" : ",") + doc);
+    });
+    stream.on("close", () => {
+        res.write("]");
+        res.end();
+    });
+    stream.on("error", (err) => {
+        return next(err);
     });
 });
 
@@ -146,12 +180,19 @@ router.get("/hostname/:hostname", (req, res, next) => {
  * Get Facilities of entries in the Syalog Collection
  */
 router.get("/facility/all", (req, res, next) => {
-    Syslog.distinct("facility", (err, doc) => {
-        if (err) return next(err);
-        // Distinct does not allow sorting, manual interpretion is needed.
-        res.json(doc.sort((a, b) => {
-            return a - b;
-        }));
+    let index = 0;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    let stream = Syslog.distinct("facility").cursor();
+    res.write("[");
+    stream.on("data", (doc) => {
+        res.write((!(index++) ? "" : ",") + doc);
+    });
+    stream.on("close", () => {
+        res.write("]");
+        res.end();
+    });
+    stream.on("error", (err) => {
+        return next(err);
     });
 });
 
@@ -162,7 +203,7 @@ router.get("/facility/:facility", (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({
-        "facility": req.params.facility
+        "facility": qs.escape(req.params.facility)
     }, null, {
         sort: {
             $natural: -1

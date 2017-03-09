@@ -6,8 +6,12 @@ const Schema = mongoose.Schema;
  * This is the Syslog parser parsed format.
  * @type Hash
  * http://stackoverflow.com/questions/33791714/data-type-to-store-time-with-mongoose
+ *
+ * _id:
+ * https://stackoverflow.com/questions/37347802/find-by-id-with-mongoose
  */
 const syslogSchemas = new Schema({
+    _id: String,
     facility: Number,
     severity: Number,
     tag: {
