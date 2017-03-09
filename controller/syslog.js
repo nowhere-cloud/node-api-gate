@@ -26,23 +26,9 @@ router.get("/*", (req, res, next) => {
 });
 
 /**
- * GET DB Stat as Status Check
- */
-router.get("/", (req, res, next) => {
-    Syslog.collection.stats((err, doc) => {
-        if (err) return next(err);
-        // Remove useless Key from doc
-        delete doc.wiredTiger;
-        delete doc.indexDetails;
-        // Render the result
-        res.json(doc);
-    });
-});
-
-/**
  * GET All Syslog Records
  */
-router.get("/all", pp_json_header, (req, res, next) => {
+router.get("/", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({}, null, {
         sort: {
@@ -65,10 +51,10 @@ router.get("/all", pp_json_header, (req, res, next) => {
 /**
  * GET one record from Syslog Dataset
  * http://stackoverflow.com/questions/14992123/finding-a-mongodb-document-by-objectid-with-mongoose
- * FIXME
+ * NOTE: These two endpoint is buggy, caring required.
  */
 
-router.get("/id/all", (req, res, next) => {
+router.get("/id", (req, res, next) => {
     Syslog.distinct("_id", (err, doc) => {
         if (err) return next(err);
         res.json(doc);
@@ -86,18 +72,30 @@ router.get("/id/:id", (req, res, next) => {
 
 /**
  * Get Tags of entries in the Syalog Collection
- */
-router.get("/tag/all", (req, res, next) => {
-    Syslog.distinct("tag", null, (err, doc) => {
-        if (err) return next(err);
-        res.json(doc);
-    });
-});
-
-/**
- * GET records from Syslog Dataset by tag
  * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
  */
+router.get("/tag", (req, res, next) => {
+    let index = 0;
+    let stream = Syslog.aggregate([{
+        $group: {
+            _id: "$tag", //$region is the column name in collection
+            count: {
+                $sum: 1
+            }
+        }
+    }]).lean().cursor();
+    res.write("[");
+    stream.on("data", (doc) => {
+        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
+    });
+    stream.on("close", () => {
+        res.write("]");
+        res.end();
+    });
+    stream.on("error", (err) => {
+        return next(err);
+    });
+});
 
 router.get("/tag/:tag", pp_json_header, (req, res, next) => {
     let index = 0;
@@ -122,18 +120,31 @@ router.get("/tag/:tag", pp_json_header, (req, res, next) => {
 });
 
 /**
- * Get Tags of entries in the Syalog Collection
+ * GET records from Syslog Dataset by hostname
  */
-router.get("/hostname/all", (req, res, next) => {
-    Syslog.distinct("hostname", null, (err, doc) => {
-        if (err) return next(err);
-        res.json(doc);
+router.get("/hostname", (req, res, next) => {
+    let index = 0;
+    let stream = Syslog.aggregate([{
+        $group: {
+            _id: "$hostname", //$region is the column name in collection
+            count: {
+                $sum: 1
+            }
+        }
+    }]).lean().cursor();
+    res.write("[");
+    stream.on("data", (doc) => {
+        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
+    });
+    stream.on("close", () => {
+        res.write("]");
+        res.end();
+    });
+    stream.on("error", (err) => {
+        return next(err);
     });
 });
 
-/**
- * GET records from Syslog Dataset by hostname
- */
 router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -160,16 +171,29 @@ router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
 /**
  * Get Facilities of entries in the Syalog Collection
  */
-router.get("/facility/all", (req, res, next) => {
-    Syslog.distinct("facility", null, (err, doc) => {
-        if (err) return next(err);
-        res.json(doc);
+router.get("/facility", (req, res, next) => {
+    let index = 0;
+    let stream = Syslog.aggregate([{
+        $group: {
+            _id: "$facility", //$region is the column name in collection
+            count: {
+                $sum: 1
+            }
+        }
+    }]).lean().cursor();
+    res.write("[");
+    stream.on("data", (doc) => {
+        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
+    });
+    stream.on("close", () => {
+        res.write("]");
+        res.end();
+    });
+    stream.on("error", (err) => {
+        return next(err);
     });
 });
 
-/**
- * GET records from Syslog Dataset by Syslog Facilities
- */
 router.get("/facility/:facility", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({
@@ -193,18 +217,31 @@ router.get("/facility/:facility", pp_json_header, (req, res, next) => {
 });
 
 /**
- * Get Facilities of entries in the Syalog Collection
+ * Get Serverity of entries in the Syalog Collection
  */
-router.get("/severity/all", (req, res, next) => {
-    Syslog.distinct("severity", null, (err, doc) => {
-        if (err) return next(err);
-        res.json(doc);
+router.get("/severity", (req, res, next) => {
+    let index = 0;
+    let stream = Syslog.aggregate([{
+        $group: {
+            _id: "$severity", //$region is the column name in collection
+            count: {
+                $sum: 1
+            }
+        }
+    }]).lean().cursor();
+    res.write("[");
+    stream.on("data", (doc) => {
+        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
+    });
+    stream.on("close", () => {
+        res.write("]");
+        res.end();
+    });
+    stream.on("error", (err) => {
+        return next(err);
     });
 });
 
-/**
- * GET records from Syslog Dataset by Syslog Facilities
- */
 router.get("/severity/:severity", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({
@@ -227,5 +264,18 @@ router.get("/severity/:severity", pp_json_header, (req, res, next) => {
     });
 });
 
+/**
+ * GET DB Stat as Status Check
+ */
+router.get("/stats", (req, res, next) => {
+    Syslog.collection.stats((err, doc) => {
+        if (err) return next(err);
+        // Remove useless Key from doc
+        delete doc.wiredTiger;
+        delete doc.indexDetails;
+        // Render the result
+        res.json(doc);
+    });
+});
 
 module.exports = router;
