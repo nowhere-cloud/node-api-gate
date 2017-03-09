@@ -1,4 +1,3 @@
-
 "use strict";
 
 const express = require("express");
@@ -20,6 +19,11 @@ const pp_json_header = (req, res, next) => {
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     next();
 };
+
+router.get("/*", (req, res, next) => {
+    res.header("X-Timestamp", Date.now());
+    next();
+});
 
 /**
  * GET DB Stat as Status Check
@@ -162,12 +166,28 @@ router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
 /**
  * Get Facilities of entries in the Syalog Collection
  */
-router.get("/facility/all", pp_json_header, (req, res, next) => {
+router.get("/facility/all", (req, res, next) => {
+    Syslog.distinct("facility", null, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
+    });
+});
+
+/**
+ * GET records from Syslog Dataset by Syslog Facilities
+ */
+router.get("/facility/:facility", pp_json_header, (req, res, next) => {
     let index = 0;
-    let stream = Syslog.distinct("facility").cursor();
+    let stream = Syslog.find({
+        "facility": qs.escape(req.params.facility)
+    }, null, {
+        sort: {
+            $natural: -1
+        }
+    }).lean().cursor();
     res.write("[");
     stream.on("data", (doc) => {
-        res.write((!(index++) ? "" : ",") + doc);
+        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
     });
     stream.on("close", () => {
         res.write("]");
@@ -179,12 +199,22 @@ router.get("/facility/all", pp_json_header, (req, res, next) => {
 });
 
 /**
+ * Get Facilities of entries in the Syalog Collection
+ */
+router.get("/serverity/all", (req, res, next) => {
+    Syslog.distinct("serverity", null, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
+    });
+});
+
+/**
  * GET records from Syslog Dataset by Syslog Facilities
  */
-router.get("/facility/:facility", pp_json_header, (req, res, next) => {
+router.get("/serverity/:facility", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({
-        "facility": qs.escape(req.params.facility)
+        "serverity": qs.escape(req.params.facility)
     }, null, {
         sort: {
             $natural: -1
