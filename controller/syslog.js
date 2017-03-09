@@ -76,7 +76,7 @@ router.get("/id/all", (req, res, next) => {
 });
 
 router.get("/id/:id", (req, res, next) => {
-    Syslog.distinct({
+    Syslog.findOne({
         "_id": qs.escape(req.params.id)
     }, (err, doc) => {
         if (err) return next(err);
