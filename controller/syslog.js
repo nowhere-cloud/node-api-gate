@@ -54,6 +54,7 @@ router.get("/all", (req, res, next) => {
  * http://stackoverflow.com/questions/14992123/finding-a-mongodb-document-by-objectid-with-mongoose
  * FIXME
  */
+
 /*
 router.get("/id/:id", (req, res, next) => {
     Syslog.findOne({ "_id": ObjectId("58c0f71ca891a2000f27c30e") }, (err, doc) => {
@@ -66,25 +67,19 @@ router.get("/id/:id", (req, res, next) => {
 */
 
 /**
+ * Get Tags of entries in the Syalog Collection
+ */
+router.get("/tag/all", (req, res, next) => {
+    Syslog.distinct("tag",(err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
+    });
+});
+
+/**
  * GET records from Syslog Dataset by tag
  * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
  */
-router.get("/tags", (req, res, next) => {
-    let index = 0;
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
-    let stream = Syslog.distinct("tag").lean().cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
-        res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
-        res.write("]");
-        res.end();
-    });
-    stream.on("error", (err) => {
-        return next(err);
-    });
-});
 
 router.get("/tag/:tag", (req, res, next) => {
     let index = 0;
@@ -102,6 +97,16 @@ router.get("/tag/:tag", (req, res, next) => {
     });
     stream.on("error", (err) => {
         return next(err);
+    });
+});
+
+/**
+ * Get Tags of entries in the Syalog Collection
+ */
+router.get("/hostname/all", (req, res, next) => {
+    Syslog.distinct("hostname",(err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
 
