@@ -54,9 +54,8 @@ router.get("/all", (req, res, next) => {
  * http://stackoverflow.com/questions/14992123/finding-a-mongodb-document-by-objectid-with-mongoose
  */
 router.get("/id/:id", (req, res, next) => {
-    Syslog.findOne(req.params.id, (err, doc) => {
+    Syslog.findOne(ObjectId(req.params.id), (err, doc) => {
         if (err) {
-            res.write(err);
             return next(err);
         }
         res.write(doc);
