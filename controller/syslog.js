@@ -34,7 +34,7 @@ router.get("/", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).lean().cursor();
+    }).cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -79,11 +79,9 @@ router.get("/tag", (req, res, next) => {
     let stream = Syslog.aggregate([{
         $group: {
             _id: "$tag", //$region is the column name in collection
-            count: {
-                $sum: 1
-            }
+            count: {$sum: 1}
         }
-    }]).lean().cursor();
+    }]).cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -105,7 +103,7 @@ router.get("/tag/:tag", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).lean().cursor();
+    }).cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -131,7 +129,7 @@ router.get("/hostname", (req, res, next) => {
                 $sum: 1
             }
         }
-    }]).lean().cursor();
+    }]).cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -154,7 +152,7 @@ router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).lean().cursor();
+    }).cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -180,7 +178,7 @@ router.get("/facility", (req, res, next) => {
                 $sum: 1
             }
         }
-    }]).lean().cursor();
+    }]).cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -202,7 +200,7 @@ router.get("/facility/:facility", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).lean().cursor();
+    }).cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -228,7 +226,7 @@ router.get("/severity", (req, res, next) => {
                 $sum: 1
             }
         }
-    }]).lean().cursor();
+    }]).cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
@@ -250,7 +248,7 @@ router.get("/severity/:severity", pp_json_header, (req, res, next) => {
         sort: {
             $natural: -1
         }
-    }).lean().cursor();
+    }).cursor();
     res.write("[");
     stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
