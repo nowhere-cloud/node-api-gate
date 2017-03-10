@@ -44,17 +44,6 @@ router.get("/", pp_json_header, (req, res, next) => {
 });
 
 /**
- * GET one record from Syslog Dataset
- */
-
-router.get("/:id", (req, res, next) => {
-    Syslog.findById(qs.escape(req.params.id), (err, doc) => {
-        if (err) return next(err);
-        res.json(doc);
-    });
-});
-
-/**
  * Get Tags of entries in the Syalog Collection
  * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
  */
@@ -181,6 +170,28 @@ router.get("/severity/:severity", pp_json_header, (req, res, next) => {
     });
     stream.on("error", (err) => {
         return next(err);
+    });
+});
+
+/**
+ * Extract ID of each syslog entry
+ */
+router.get("/id", (req, res, next) => {
+    Syslog.distinct("_id", null, (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
+    });
+});
+
+
+/**
+ * GET one record from Syslog Dataset
+ */
+
+router.get("/id/:id", (req, res, next) => {
+    Syslog.findById(qs.escape(req.params.id), (err, doc) => {
+        if (err) return next(err);
+        res.json(doc);
     });
 });
 
