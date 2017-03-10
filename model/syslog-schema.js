@@ -30,7 +30,7 @@ const syslogSchemas = new Schema({
 }, {
     capped: {
         size: 5242880,
-        max: 2048,
+        max: 4096,
         autoIndexId: true
     }
 });
