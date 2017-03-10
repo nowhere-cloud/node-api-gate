@@ -146,19 +146,10 @@ router.get("/facility", (req, res, next) => {
     });
 });
 
-router.get("/facility/:facility/:rule?", pp_json_header, (req, res, next) => {
+router.get("/facility/:facility", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({
-        "facility": () => {
-            switch (qs.escape(req.params.rule)) {
-            case "lt":
-                return { $lt: qs.escape(req.params.facility) };
-            case "gt":
-                return { $gt: qs.escape(req.params.facility) };
-            default:
-                return qs.escape(req.params.facility);
-            }
-        }
+        "facility": qs.escape(req.params.facility)
     }, null, {
         sort: {
             $natural: -1
@@ -187,19 +178,10 @@ router.get("/severity", (req, res, next) => {
     });
 });
 
-router.get("/severity/:severity/:rule?", pp_json_header, (req, res, next) => {
+router.get("/severity/:severity", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({
-        "severity": () => {
-            switch (qs.escape(req.params.rule)) {
-            case "lt":
-                return { $lt: qs.escape(req.params.severity) };
-            case "gt":
-                return { $gt: qs.escape(req.params.severity) };
-            default:
-                return qs.escape(req.params.severity);
-            }
-        }
+        "severity": qs.escape(req.params.severity)
     }, null, {
         sort: {
             $natural: -1
@@ -217,7 +199,6 @@ router.get("/severity/:severity/:rule?", pp_json_header, (req, res, next) => {
         return next(err);
     });
 });
-
 
 /**
  * GET DB Stat as Status Check
