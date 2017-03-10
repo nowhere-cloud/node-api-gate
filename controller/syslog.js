@@ -154,7 +154,7 @@ router.get("/facility/:facility/:rule?", pp_json_header, (req, res, next) => {
             case "lt":
                 return { $lt: qs.escape(req.params.facility) };
             case "gt":
-                return { $lt: qs.escape(req.params.facility) };
+                return { $gt: qs.escape(req.params.facility) };
             default:
                 return qs.escape(req.params.facility);
             }
@@ -195,7 +195,7 @@ router.get("/severity/:severity/:rule?", pp_json_header, (req, res, next) => {
             case "lt":
                 return { $lt: qs.escape(req.params.severity) };
             case "gt":
-                return { $lt: qs.escape(req.params.severity) };
+                return { $gt: qs.escape(req.params.severity) };
             default:
                 return qs.escape(req.params.severity);
             }
