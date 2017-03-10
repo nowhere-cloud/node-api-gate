@@ -40,7 +40,7 @@ router.get("/", pp_json_header, (req, res, next) => {
         }
     }).lean().cursor();
     stream.on("readable", () => {
-        res.write("[");
+        if (index === 0) res.write("[");
     }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
     }).on("close", () => {
@@ -69,7 +69,7 @@ router.get("/tag/:tag", pp_json_header, (req, res, next) => {
         "tag": hlp_sanitze(req.params.tag)
     }, null, { sort: { $natural: -1 } }).lean().cursor();
     stream.on("readable", () => {
-        res.write("[");
+        if (index === 0) res.write("[");
     }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
     }).on("close", () => {
@@ -98,7 +98,7 @@ router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
         "hostname": hlp_sanitze(req.params.hostname)
     }, null, { sort: { $natural: -1 } }).lean().cursor();
     stream.on("readable", () => {
-        res.write("[");
+        if (index === 0) res.write("[");
     }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
     }).on("close", () => {
@@ -126,7 +126,7 @@ router.get("/facility/:facility", pp_json_header, (req, res, next) => {
         "facility": hlp_sanitze(req.params.facility)
     }, null, { sort: { $natural: -1 } }).lean().cursor();
     stream.on("readable", () => {
-        res.write("[");
+        if (index === 0) res.write("[");
     }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
     }).on("close", () => {
@@ -154,7 +154,7 @@ router.get("/severity/:severity", pp_json_header, (req, res, next) => {
         "severity": hlp_sanitze(req.params.severity)
     }, null, { sort: { $natural: -1 } }).lean().cursor();
     stream.on("readable", () => {
-        res.write("[");
+        if (index === 0) if (index === 0) res.write("[");
     }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
     }).on("close", () => {
