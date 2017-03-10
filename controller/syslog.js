@@ -39,13 +39,11 @@ router.get("/", pp_json_header, (req, res, next) => {
             $natural: -1
         }
     }).lean().cursor();
-    stream.on("readable", () => {
-        if (index === 0) res.write("[");
-    }).on("data", (doc) => {
+    res.write("[");
+    stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    }).on("close", () => {
-        res.write("]");
     }).on("end", () => {
+        res.write("]");
         res.end();
     }).on("error", (err) => {
         return next(err);
@@ -68,13 +66,11 @@ router.get("/tag/:tag", pp_json_header, (req, res, next) => {
     let stream = Syslog.find({
         "tag": hlp_sanitze(req.params.tag)
     }, null, { sort: { $natural: -1 } }).lean().cursor();
-    stream.on("readable", () => {
-        if (index === 0) res.write("[");
-    }).on("data", (doc) => {
+    res.write("[");
+    stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    }).on("close", () => {
-        res.write("]");
     }).on("end", () => {
+        res.write("]");
         res.end();
     }).on("error", (err) => {
         return next(err);
@@ -97,13 +93,11 @@ router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
     let stream = Syslog.find({
         "hostname": hlp_sanitze(req.params.hostname)
     }, null, { sort: { $natural: -1 } }).lean().cursor();
-    stream.on("readable", () => {
-        if (index === 0) res.write("[");
-    }).on("data", (doc) => {
+    res.write("[");
+    stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    }).on("close", () => {
-        res.write("]");
     }).on("end", () => {
+        res.write("]");
         res.end();
     }).on("error", (err) => {
         return next(err);
@@ -125,13 +119,11 @@ router.get("/facility/:facility", pp_json_header, (req, res, next) => {
     let stream = Syslog.find({
         "facility": hlp_sanitze(req.params.facility)
     }, null, { sort: { $natural: -1 } }).lean().cursor();
-    stream.on("readable", () => {
-        if (index === 0) res.write("[");
-    }).on("data", (doc) => {
+    res.write("[");
+    stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    }).on("close", () => {
-        res.write("]");
     }).on("end", () => {
+        res.write("]");
         res.end();
     }).on("error", (err) => {
         return next(err);
@@ -153,13 +145,11 @@ router.get("/severity/:severity", pp_json_header, (req, res, next) => {
     let stream = Syslog.find({
         "severity": hlp_sanitze(req.params.severity)
     }, null, { sort: { $natural: -1 } }).lean().cursor();
-    stream.on("readable", () => {
-        if (index === 0) if (index === 0) res.write("[");
-    }).on("data", (doc) => {
+    res.write("[");
+    stream.on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    }).on("close", () => {
-        res.write("]");
     }).on("end", () => {
+        res.write("]");
         res.end();
     }).on("error", (err) => {
         return next(err);
