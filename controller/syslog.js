@@ -20,11 +20,6 @@ const pp_json_header = (req, res, next) => {
     next();
 };
 
-router.get("/*", (req, res, next) => {
-    res.header("X-Timestamp", Date.now());
-    next();
-});
-
 /**
  * GET All Syslog Records
  */
@@ -50,8 +45,6 @@ router.get("/", pp_json_header, (req, res, next) => {
 
 /**
  * GET one record from Syslog Dataset
- * http://stackoverflow.com/questions/14992123/finding-a-mongodb-document-by-objectid-with-mongoose
- * NOTE: These two endpoint is buggy, caring required.
  */
 
 router.get("/:id", (req, res, next) => {
