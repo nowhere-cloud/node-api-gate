@@ -11,7 +11,6 @@ const Schema = mongoose.Schema;
  * https://stackoverflow.com/questions/37347802/find-by-id-with-mongoose
  */
 const syslogSchemas = new Schema({
-    _id: String,
     facility: Number,
     severity: Number,
     tag: {

@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 const Syslog = require("../model/syslog-schema");
 const qs = require("querystring");
 
@@ -10,7 +11,6 @@ const qs = require("querystring");
  * Mongoose Stuffs
  */
 mongoose.connect(process.env.MONGODB_URI);
-var db = mongoose.connection;
 
 /**
  * Route Preprocess: Add JSON Header to reduce code dupe
@@ -63,7 +63,7 @@ router.get("/id", (req, res, next) => {
 
 router.get("/id/:id", (req, res, next) => {
     Syslog.findOne({
-        "_id": qs.escape(req.params.id)
+        "_id": ObjectId.fromString(qs.escape(req.params.id))
     }, (err, doc) => {
         if (err) return next(err);
         res.json(doc);
