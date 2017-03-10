@@ -55,9 +55,7 @@ router.get("/", pp_json_header, (req, res, next) => {
  */
 
 router.get("/:id", (req, res, next) => {
-    Syslog.findOne({
-        "_id": ObjectId.fromString(qs.escape(req.params.id))
-    }, (err, doc) => {
+    Syslog.findById(qs.escape(req.params.id), (err, doc) => {
         if (err) res.send(err);
         res.send(doc);
     });
