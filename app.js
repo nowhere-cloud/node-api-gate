@@ -36,6 +36,7 @@ app.use(function(err, req, res, next) {
     if (res.headersSent) {
         return next(err);
     }
+    
     // render the error page
     res.status(err.status || 500).json(err);
 });
