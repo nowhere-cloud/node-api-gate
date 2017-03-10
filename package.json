@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www.js",
-    "start-amqp": "node ./helper/amqp-listener.js"
+    "start": "node ./bin/www.js"
   },
   "dependencies": {
     "amqplib": "^0.5.1",

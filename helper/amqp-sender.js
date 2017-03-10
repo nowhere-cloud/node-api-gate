@@ -1,7 +1,8 @@
 "use strict";
 
 const amqp = require("amqplib");
-const uuid = require("uuid");
+const uuid = require("uuid/v1");
+const debug = require("debug")("node-apimanager:amqp-sender");
 
 module.exports = {
     /**
@@ -11,6 +12,7 @@ module.exports = {
      * @return null
      */
     send: (target, msg) => {
+        let active_uuid = uuid();
         amqp.connect(process.env.AMQP_URI).then(
             (conn) => conn.createChannel().then(
             (ch) => {
@@ -19,14 +21,15 @@ module.exports = {
                 });
                 return q.then(() => {
                     ch.sendToQueue(target, new Buffer.from(JSON.stringify(msg)), {
-                        correlationId: uuid
+                        correlationId: active_uuid
                     });
                     return ch.close();
                 });
             }).finally(() => {
                 conn.close();
             })).catch((err) => {
-                console.warn(err);
+                debug(err);
             });
+        return active_uuid;
     }
 };

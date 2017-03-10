@@ -14,8 +14,6 @@ ENV MONGODB_URI=mongodb://mongo/nowhere \
     MYSQL_PASS=nowhere \
     MYSQL_DB=nowhere
 
-# RUN apk add --no-cache supervisor
+RUN apk add --no-cache supervisor
 
-ENTRYPOINT ["npm", "start"]
-# Disabled for debug
-# ENTRYPOINT ["/usr/bin/supervisord", "-c", "/srv/supervisord.conf"]
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/srv/supervisord.conf"]

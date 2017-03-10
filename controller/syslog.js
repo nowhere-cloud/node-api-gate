@@ -21,6 +21,15 @@ const pp_json_header = (req, res, next) => {
 };
 
 /**
+ * Sanitze Input String
+ * @param  String raw_string Raw String, such as from user input
+ * @return String            Sanitzed String
+ */
+const hlp_sanitze = (raw_string) => {
+    return qs.escape(raw_string);
+};
+
+/**
  * GET All Syslog Records
  */
 router.get("/", pp_json_header, (req, res, next) => {
@@ -30,15 +39,15 @@ router.get("/", pp_json_header, (req, res, next) => {
             $natural: -1
         }
     }).lean().cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
+    stream.on("readable", () => {
+        res.write("[");
+    }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
+    }).on("close", () => {
         res.write("]");
+    }).on("end", () => {
         res.end();
-    });
-    stream.on("error", (err) => {
+    }).on("error", (err) => {
         return next(err);
     });
 });
@@ -57,21 +66,17 @@ router.get("/tag", (req, res, next) => {
 router.get("/tag/:tag", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({
-        "tag": qs.escape(req.params.tag)
-    }, null, {
-        sort: {
-            $natural: -1
-        }
-    }).lean().cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
+        "tag": hlp_sanitze(req.params.tag)
+    }, null, { sort: { $natural: -1 } }).lean().cursor();
+    stream.on("readable", () => {
+        res.write("[");
+    }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
+    }).on("close", () => {
         res.write("]");
+    }).on("end", () => {
         res.end();
-    });
-    stream.on("error", (err) => {
+    }).on("error", (err) => {
         return next(err);
     });
 });
@@ -90,21 +95,17 @@ router.get("/hostname/:hostname", pp_json_header, (req, res, next) => {
     let index = 0;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     let stream = Syslog.find({
-        "hostname": req.params.hostname
-    }, null, {
-        sort: {
-            $natural: -1
-        }
-    }).lean().cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
+        "hostname": hlp_sanitze(req.params.hostname)
+    }, null, { sort: { $natural: -1 } }).lean().cursor();
+    stream.on("readable", () => {
+        res.write("[");
+    }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
+    }).on("close", () => {
         res.write("]");
+    }).on("end", () => {
         res.end();
-    });
-    stream.on("error", (err) => {
+    }).on("error", (err) => {
         return next(err);
     });
 });
@@ -122,21 +123,17 @@ router.get("/facility", (req, res, next) => {
 router.get("/facility/:facility", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({
-        "facility": qs.escape(req.params.facility)
-    }, null, {
-        sort: {
-            $natural: -1
-        }
-    }).lean().cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
+        "facility": hlp_sanitze(req.params.facility)
+    }, null, { sort: { $natural: -1 } }).lean().cursor();
+    stream.on("readable", () => {
+        res.write("[");
+    }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
+    }).on("close", () => {
         res.write("]");
+    }).on("end", () => {
         res.end();
-    });
-    stream.on("error", (err) => {
+    }).on("error", (err) => {
         return next(err);
     });
 });
@@ -154,21 +151,17 @@ router.get("/severity", (req, res, next) => {
 router.get("/severity/:severity", pp_json_header, (req, res, next) => {
     let index = 0;
     let stream = Syslog.find({
-        "severity": qs.escape(req.params.severity)
-    }, null, {
-        sort: {
-            $natural: -1
-        }
-    }).lean().cursor();
-    res.write("[");
-    stream.on("data", (doc) => {
+        "severity": hlp_sanitze(req.params.severity)
+    }, null, { sort: { $natural: -1 } }).lean().cursor();
+    stream.on("readable", () => {
+        res.write("[");
+    }).on("data", (doc) => {
         res.write((!(index++) ? "" : ",") + JSON.stringify(doc));
-    });
-    stream.on("close", () => {
+    }).on("close", () => {
         res.write("]");
+    }).on("end", () => {
         res.end();
-    });
-    stream.on("error", (err) => {
+    }).on("error", (err) => {
         return next(err);
     });
 });
@@ -189,7 +182,7 @@ router.get("/id", (req, res, next) => {
  */
 
 router.get("/id/:id", (req, res, next) => {
-    Syslog.findById(qs.escape(req.params.id), (err, doc) => {
+    Syslog.findById(hlp_sanitze(req.params.id), (err, doc) => {
         if (err) return next(err);
         res.json(doc);
     });
