@@ -56,7 +56,7 @@ router.get('/', pp_json_header, (req, res, next) => {
 router.get('/tag', (req, res, next) => {
   Syslog.aggregate([{
     $group: {
-      tag: '$tag',
+      _id: '$tag',
       count: { $sum: 1 }
     }
   }], (err, doc) => {
@@ -89,12 +89,13 @@ router.get('/tag/:tag', pp_json_header, (req, res, next) => {
  * GET records from Syslog Dataset by hostname
  */
 router.get('/hostname', (req, res, next) => {
-  Syslog.aggregate([{
-    $group: {
-      hostname: '$hostname',
+  Syslog.aggregate([
+    { $group: {
+      _id: '$hostname',
       count: { $sum: 1 }
-    }
-  }], (err, doc) => {
+    }},
+    { $sort: { 'count': -1 } }
+  ], (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
@@ -121,12 +122,13 @@ router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
  * Get Facilities of entries in the Syalog Collection
  */
 router.get('/facility', (req, res, next) => {
-  Syslog.aggregate([{
-    $group: {
-      facility: '$facility',
+  Syslog.aggregate([
+    { $group: {
+      _id: '$facility',
       count: { $sum: 1 }
-    }
-  }], (err, doc) => {
+    }},
+    { $sort: { 'count': -1 } }
+  ], (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
@@ -152,12 +154,13 @@ router.get('/facility/:facility', pp_json_header, (req, res, next) => {
  * Get Serverity of entries in the Syalog Collection
  */
 router.get('/severity', (req, res, next) => {
-  Syslog.aggregate([{
-    $group: {
-      severity: '$severity',
+  Syslog.aggregate([
+    { $group: {
+      _id: '$severity',
       count: { $sum: 1 }
-    }
-  }], (err, doc) => {
+    }},
+    { $sort: { 'count': -1 } }
+  ], (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
