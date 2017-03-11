@@ -13,14 +13,13 @@ const Rabbit = require('../helper/amqp-sender');
  */
 const DNS = db_con.define(Schema.tblname, Schema.tblschema, Schema.tblopts);
 const tmr = setInterval(() => {
-  db_con.authenticate().then((err, rsvp) => {
-    if (err) {
-      console.log('Waiting for Database');
-    } else {
-      console.log('Database Ready');
-      DNS.sync();
-      clearInterval(tmr);
-    }
+  db_con.authenticate().then((rsvp) => {
+    console.log('Database Ready');
+    DNS.sync();
+    clearInterval(tmr);
+  }).catch((err) => {
+    console.log('Waiting for Database');
+    console.error(err);
   });
 },1000);
 
@@ -49,17 +48,19 @@ const hlp_rabbit = new Rabbit('dns-in');
  * for testing the MySQL is alive or dead
  */
 router.get('/', (req, res, next) => {
-  DNS.findAll().then((err, rsvp) => {
-    if (err) return next(err);
+  DNS.findAll().then((rsvp) => {
     res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
   });
 });
 
 
 router.get('/stats', (req, res, next) => {
-  db_con.authenticate().then((err, rsvp) => {
-    if (err) return next(err);
-    res.sendStatus(200);
+  db_con.authenticate().then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
   });
 });
 
