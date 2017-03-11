@@ -12,7 +12,17 @@ const Rabbit = require('../helper/amqp-sender');
  * Prepare Table, and query model
  */
 const DNS = db_con.define(Schema.tblname, Schema.tblschema, Schema.tblopts);
-DNS.sync();
+const tmr = setInterval(() => {
+  db_con.authenticate().then((err, rsvp) => {
+    if (err) {
+      console.log('Waiting for Database');
+    } else {
+      console.log('Database Ready');
+      DNS.sync();
+      clearInterval(tmr);
+    }
+  });
+},1000);
 
 /**
  * Route Preprocess: Add JSON Header to reduce code dupe
