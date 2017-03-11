@@ -1,7 +1,6 @@
 'use strict';
 
-const sequelize = require('sequelize');
-const Zeichenkette = sequelize.STRING;
+const Sequelize = require('sequelize');
 /**
  * This is the Syslog parser parsed format.
  * @type Hash
@@ -11,11 +10,16 @@ const Zeichenkette = sequelize.STRING;
  * https://stackoverflow.com/questions/37347802/find-by-id-with-mongoose
  */
 const dnsSchemas = {
-  type: { type: Zeichenkette(4), allowNull: false },
-  name: { type: Zeichenkette(64), allowNull: false },
-  ipv4address: { type: Zeichenkette(15), allowNull: true },
-  ipv6address: { type: Zeichenkette(39), allowNull: true },
-  cname: { type: Zeichenkette(255), allowNull: true },
+  type: { type: Sequelize.STRING(4), allowNull: false, field: 'type' },
+  name: { type: Sequelize.STRING(64), allowNull: false },
+  ipv4address: { type: Sequelize.STRING(15), allowNull: true },
+  ipv6address: { type:Sequelize.STRING(39), allowNull: true },
+  cname: { type: Sequelize.STRING(255), allowNull: true }
+};
+
+const tableName = 'dns_records';
+
+const tableOptions = {
   indexes: [
     {
       name: 'ipv4address',
@@ -30,12 +34,6 @@ const dnsSchemas = {
       fields: ['name']
     }
   ]
-};
-
-const tableName = 'dns_records';
-
-const tableOptions = {
-  
 };
 
 module.exports.tblschema = dnsSchemas;

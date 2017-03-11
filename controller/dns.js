@@ -12,7 +12,7 @@ const Rabbit = require('../helper/amqp-sender');
  * Prepare Table, and query model
  */
 const DNS = db_con.define(Schema.tblname, Schema.tblschema, Schema.tblopts);
-db_con.sync();
+DNS.sync();
 
 /**
  * Route Preprocess: Add JSON Header to reduce code dupe
