@@ -9,7 +9,7 @@ class Rabbit {
     this.listen = monitor;
   }
 
-  listen() {
+  listenQueue() {
     let listen = this.listen;
     amqp.connect(this.URI).then(
       (conn) => conn.createChannel().then(
@@ -30,4 +30,4 @@ class Rabbit {
 }
 
 const listener = new Rabbit(process.env.AMQP_URI, process.env.LISTEN_Q);
-listener.listen();
+listener.listenQueue();
