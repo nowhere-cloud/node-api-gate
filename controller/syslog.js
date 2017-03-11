@@ -95,10 +95,6 @@ router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   let stream = Syslog.find({
     'hostname': hlp_sanitze(req.params.hostname)
-  }, null, {
-    sort: {
-      $natural: -1
-    }
   }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
@@ -115,7 +111,12 @@ router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
  * Get Facilities of entries in the Syalog Collection
  */
 router.get('/facility', (req, res, next) => {
-  Syslog.distinct('facility', null, (err, doc) => {
+  Syslog.aggregate([{
+    $group: {
+      _id: '$facility',
+      count: { $sum: 1 }
+    }
+  }], null, { sort: { $natural: -1 } }, (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
@@ -125,11 +126,7 @@ router.get('/facility/:facility', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
     'facility': hlp_sanitze(req.params.facility)
-  }, null, {
-    sort: {
-      $natural: -1
-    }
-  }).lean().cursor();
+  }, null, { sort: { $natural: -1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
     res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
@@ -155,11 +152,7 @@ router.get('/severity/:severity', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
     'severity': hlp_sanitze(req.params.severity)
-  }, null, {
-    sort: {
-      $natural: -1
-    }
-  }).lean().cursor();
+  }, null, { sort: { $natural: -1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
     res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
