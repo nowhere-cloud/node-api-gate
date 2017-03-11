@@ -34,7 +34,10 @@ const hlp_sanitze = (raw_string) => {
  * GET DB Stat as Status Check
  */
 router.get('/stats', (req, res, next) => {
-
+  MySQL.authenticate().then((err, rsvp) => {
+    if (err) return next(err);
+    res.send(rsvp);
+  });
 });
 
 module.exports = router;
