@@ -54,7 +54,12 @@ router.get('/', pp_json_header, (req, res, next) => {
  * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
  */
 router.get('/tag', (req, res, next) => {
-  Syslog.distinct('tag', null, (err, doc) => {
+  Syslog.aggregate([{
+    $group: {
+      tag: '$tag',
+      count: { $sum: 1 }
+    }
+  }], (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
@@ -84,7 +89,12 @@ router.get('/tag/:tag', pp_json_header, (req, res, next) => {
  * GET records from Syslog Dataset by hostname
  */
 router.get('/hostname', (req, res, next) => {
-  Syslog.distinct('hostname', null, (err, doc) => {
+  Syslog.aggregate([{
+    $group: {
+      hostname: '$hostname',
+      count: { $sum: 1 }
+    }
+  }], (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
@@ -113,10 +123,10 @@ router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
 router.get('/facility', (req, res, next) => {
   Syslog.aggregate([{
     $group: {
-      _id: '$facility',
+      facility: '$facility',
       count: { $sum: 1 }
     }
-  }], null, { sort: { $natural: -1 } }, (err, doc) => {
+  }], (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
@@ -142,7 +152,12 @@ router.get('/facility/:facility', pp_json_header, (req, res, next) => {
  * Get Serverity of entries in the Syalog Collection
  */
 router.get('/severity', (req, res, next) => {
-  Syslog.distinct('severity', null, (err, doc) => {
+  Syslog.aggregate([{
+    $group: {
+      severity: '$severity',
+      count: { $sum: 1 }
+    }
+  }], (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
