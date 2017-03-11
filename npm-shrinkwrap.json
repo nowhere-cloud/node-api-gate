@@ -523,11 +523,6 @@
         }
       }
     },
-    "sequelize-stream": {
-      "version": "1.0.2",
-      "from": "sequelize-stream@latest",
-      "resolved": "https://registry.npmjs.org/sequelize-stream/-/sequelize-stream-1.0.2.tgz"
-    },
     "serve-static": {
       "version": "1.11.2",
       "from": "serve-static@>=1.11.2 <1.12.0",

@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Syslog = require('../model/syslog-schema');
+const Syslog = require('../model/syslog');
 const qs = require('querystring');
 
 /**

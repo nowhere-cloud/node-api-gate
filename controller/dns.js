@@ -2,16 +2,17 @@
 
 const express = require('express');
 const router = express.Router();
-const MySQL = require('sequelize');
-const db_raw = new MySQL('mysql://' + process.env.MYSQL_USER + ':' + process.env.MYSQL_PASS + '@mysql/' + process.env.MYSQL_DB);
-const streamer = require('sequelize-stream');
-const db_s = streamer(db_raw);
+const sqlize = require('sequelize');
+const db_con = new sqlize('mysql://' + process.env.MYSQL_USER + ':' + process.env.MYSQL_PASS + '@mysql/' + process.env.MYSQL_DB);
 const qs = require('querystring');
+const Schema = require('../model/dns');
+const Rabbit = require('../helper/amqp-sender');
 
 /**
- * Mongoose Stuffs
+ * Prepare Table, and query model
  */
-
+const DNS = db_con.define(Schema.tblname, Schema.tblschema, Schema.tblopts);
+db_con.sync();
 
 /**
  * Route Preprocess: Add JSON Header to reduce code dupe
@@ -30,13 +31,25 @@ const hlp_sanitze = (raw_string) => {
   return qs.escape(raw_string);
 };
 
+const hlp_rabbit = new Rabbit('dns-in');
+
 /**
  * GET DB Stat as Status Check
+ * Sequelize does not support Stats, but Sequelize.authenticate is useful
+ * for testing the MySQL is alive or dead
  */
-router.get('/stats', (req, res, next) => {
-  MySQL.authenticate().then((err, rsvp) => {
+router.get('/', (req, res, next) => {
+  DNS.findAll().then((err, rsvp) => {
     if (err) return next(err);
-    res.send(rsvp);
+    res.json(rsvp);
+  });
+});
+
+
+router.get('/stats', (req, res, next) => {
+  db_con.authenticate().then((err, rsvp) => {
+    if (err) return next(err);
+    res.sendStatus(200);
   });
 });
 

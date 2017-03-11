@@ -4,15 +4,24 @@ const amqp = require('amqplib');
 const uuid = require('uuid/v1');
 const debug = require('debug')('node-apimanager:amqp-sender');
 
-module.exports = {
+class Rabbit {
+  /**
+   * Prepare Message Sender
+   * @param  String target Message target
+   * @return null
+   */
+  constructor(target) {
+    this.target = target;
+  }
+
   /**
    * Send Message to RabbitMQ
-   * @param  String target Message target
    * @param  String msg    Message Payload
    * @return null
    */
-  send: (target, msg) => {
+  send(msg) {
     let active_uuid = uuid();
+    let target = this.target;
     amqp.connect(process.env.AMQP_URI).then(
       (conn) => conn.createChannel().then(
         (ch) => {
@@ -32,4 +41,6 @@ module.exports = {
         });
     return active_uuid;
   }
-};
+}
+
+module.exports = Rabbit;
