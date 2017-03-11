@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 
 const index = require('./controller/index');
 const syslog = require('./controller/syslog');
+const dns = require('./controller/dns');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(cookieParser());
 // Namespacing
 app.use('/', index);
 app.use('/syslog', syslog);
+app.use('/dns', dns);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,7 +1,6 @@
 'use strict';
 
 const amqp = require('amqplib');
-const uuid = require('uuid');
 const debug = require('debug')('node-apimanager:amqp-sender');
 
 class Rabbit {
@@ -30,5 +29,5 @@ class Rabbit {
   }
 }
 
-const listener = new Rabbit(process.env.AMQP_URI);
+const listener = new Rabbit(process.env.AMQP_URI, process.env.LISTEN_Q);
 listener.listen();
