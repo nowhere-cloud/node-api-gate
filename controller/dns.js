@@ -17,9 +17,8 @@ const tmr = setInterval(() => {
     console.log('Database Ready');
     DNS.sync();
     clearInterval(tmr);
-  }).catch((err) => {
-    console.log('Waiting for Database');
-    console.error(err);
+  }).catch(() => {
+    console.error('Waiting for Database to be Booted');
   });
 },1000);
 
@@ -58,7 +57,7 @@ router.get('/', (req, res, next) => {
 
 router.get('/stats', (req, res, next) => {
   db_con.authenticate().then((rsvp) => {
-    res.json(rsvp);
+    res.sendStatus(200);
   }).catch((err) => {
     return next(err);
   });
