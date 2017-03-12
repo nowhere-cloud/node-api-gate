@@ -79,7 +79,7 @@ router.get('/tag', (req, res, next) => {
 router.get('/tag/:tag', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
-    'tag': hlp_sanitze(req.params.tag)
+    'tag': hlp_sanitze(decodeURIComponent(req.params.tag))
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
