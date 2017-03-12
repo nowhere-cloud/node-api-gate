@@ -33,11 +33,7 @@ const hlp_sanitze = (raw_string) => {
  */
 router.get('/', pp_json_header, (req, res, next) => {
   let index = 0;
-  let stream = Syslog.find({}, null, {
-    sort: {
-      $natural: -1
-    }
-  }).lean().cursor();
+  let stream = Syslog.find({}, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
     res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
@@ -50,16 +46,31 @@ router.get('/', pp_json_header, (req, res, next) => {
 });
 
 /**
+ * GET DB Stat as Status Check
+ */
+router.get('/stats', (req, res, next) => {
+  Syslog.collection.stats((err, doc) => {
+    if (err) return next(err);
+    // Remove useless Key from doc
+    delete doc.wiredTiger;
+    delete doc.indexDetails;
+    // Render the result
+    res.json(doc);
+  });
+});
+
+/**
  * Get Tags of entries in the Syalog Collection
  * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
  */
 router.get('/tag', (req, res, next) => {
-  Syslog.aggregate([{
-    $group: {
+  Syslog.aggregate([
+    { $group: {
       _id: '$tag',
       count: { $sum: 1 }
-    }
-  }], (err, doc) => {
+    }},
+    { $sort: { 'count': -1 } }
+  ], (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
@@ -69,11 +80,7 @@ router.get('/tag/:tag', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
     'tag': hlp_sanitze(req.params.tag)
-  }, null, {
-    sort: {
-      $natural: -1
-    }
-  }).lean().cursor();
+  }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
     res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
@@ -106,7 +113,7 @@ router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   let stream = Syslog.find({
     'hostname': hlp_sanitze(req.params.hostname)
-  }).lean().cursor();
+  }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
     res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
@@ -138,7 +145,7 @@ router.get('/facility/:facility', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
     'facility': hlp_sanitze(req.params.facility)
-  }, null, { sort: { $natural: -1 } }).lean().cursor();
+  }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
     res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
@@ -170,7 +177,7 @@ router.get('/severity/:severity', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
     'severity': hlp_sanitze(req.params.severity)
-  }, null, { sort: { $natural: -1 } }).lean().cursor();
+  }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
     res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
@@ -183,37 +190,12 @@ router.get('/severity/:severity', pp_json_header, (req, res, next) => {
 });
 
 /**
- * Extract ID of each syslog entry
- */
-router.get('/id', (req, res, next) => {
-  Syslog.distinct('_id', null, (err, doc) => {
-    if (err) return next(err);
-    res.json(doc);
-  });
-});
-
-
-/**
  * GET one record from Syslog Dataset
  */
 
-router.get('/id/:id', (req, res, next) => {
+router.get('/:id', (req, res, next) => {
   Syslog.findById(hlp_sanitze(req.params.id), (err, doc) => {
     if (err) return next(err);
-    res.json(doc);
-  });
-});
-
-/**
- * GET DB Stat as Status Check
- */
-router.get('/stats', (req, res, next) => {
-  Syslog.collection.stats((err, doc) => {
-    if (err) return next(err);
-    // Remove useless Key from doc
-    delete doc.wiredTiger;
-    delete doc.indexDetails;
-    // Render the result
     res.json(doc);
   });
 });
