@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const models  = require('../models');
-const qs = require('querystring');
+const sanitizer = require('sanitize')();
 const Rabbit = require('../helper/amqp-sender');
 const IP = require('ip');
 
@@ -21,7 +21,7 @@ const pp_json_header = (req, res, next) => {
  * @return String            Sanitzed String
  */
 const hlp_sanitze = (raw_string) => {
-  return qs.escape(raw_string);
+  return sanitizer.value(raw_string, 'string');
 };
 
 /**
@@ -95,7 +95,7 @@ router.get('/search/ipv4/:ipv6', (req, res, next) => {
   if (IP.isV6Format(req.params.ipv6)) {
     models.dns_records.findAll({
       where: {
-        ipv4address: decodeURIComponent(hlp_sanitze(req.params.ipv6))
+        ipv4address: hlp_sanitze(req.params.ipv6)
       }
     }).then((rsvp) => {
       res.json(rsvp);

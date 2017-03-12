@@ -492,6 +492,23 @@
       "from": "retry-as-promised@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/retry-as-promised/-/retry-as-promised-2.2.0.tgz"
     },
+    "sanitize": {
+      "version": "2.0.1",
+      "from": "sanitize@latest",
+      "resolved": "https://registry.npmjs.org/sanitize/-/sanitize-2.0.1.tgz",
+      "dependencies": {
+        "lodash": {
+          "version": "3.10.1",
+          "from": "lodash@>=3.5.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz"
+        },
+        "validator": {
+          "version": "3.43.0",
+          "from": "validator@>=3.33.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/validator/-/validator-3.43.0.tgz"
+        }
+      }
+    },
     "semver": {
       "version": "5.3.0",
       "from": "semver@>=5.1.0 <6.0.0",

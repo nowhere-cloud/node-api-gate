@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Syslog = require('../models-mongo/syslog');
-const qs = require('querystring');
+const sanitizer = require('sanitize')();
 
 /**
  * Mongoose Stuffs
@@ -25,7 +25,7 @@ const pp_json_header = (req, res, next) => {
  * @return String            Sanitzed String
  */
 const hlp_sanitze = (raw_string) => {
-  return qs.escape(raw_string);
+  return sanitizer.value(raw_string, 'string');
 };
 
 /**
