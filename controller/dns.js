@@ -49,10 +49,10 @@ router.get('/', (req, res, next) => {
 });
 
 /**
- * Get ONE Entry by ID
+ * Health Check Endpoint.
  */
-router.get('/:id', (req, res, next) => {
-  models.dns_records.findById(hlp_sanitze(req.params.id)).then((rsvp) => {
+router.get('/stats', (req, res, next) => {
+  models.dns_records.describe().then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
     return next(err);
@@ -107,12 +107,11 @@ router.get('/search/ipv4/:ipv6', (req, res, next) => {
   }
 });
 
-
 /**
- * Health Check Endpoint.
+ * Get ONE Entry by ID
  */
-router.get('/stats', (req, res, next) => {
-  models.dns_records.describe().then((rsvp) => {
+router.get('/:id', (req, res, next) => {
+  models.dns_records.findById(hlp_sanitze(req.params.id)).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
     return next(err);
