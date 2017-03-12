@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const router = express();
+const router = express.Router();
 const sqlize = require('sequelize');
 const db_con = new sqlize('mysql://' + process.env.MYSQL_USER + ':' + process.env.MYSQL_PASS + '@mysql/' + process.env.MYSQL_DB);
 const qs = require('querystring');
@@ -127,8 +127,8 @@ router.get('/search/ipv4/:ipv6', (req, res, next) => {
  * Health Check Endpoint.
  */
 router.get('/stats', (req, res, next) => {
-  DNS.describe().then(() => {
-    res.sendStatus(200);
+  DNS.describe().then((rsvp) => {
+    res.json(rsvp);
   }).catch((err) => {
     return next(err);
   });
