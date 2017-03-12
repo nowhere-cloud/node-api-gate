@@ -78,10 +78,10 @@ router.get('/tag', (req, res, next) => {
 
 router.get('/tag/:tag', pp_json_header, (req, res, next) => {
   res.setHeader('X-PARAM-R', req.params.tag);
-  res.setHeader('X-PARAM-S', hlp_sanitze(decodeURIComponent(req.params.tag)));
+  res.setHeader('X-PARAM-S', decodeURIComponent(hlp_sanitze(req.params.tag)));
   let index = 0;
   let stream = Syslog.find({
-    'tag': hlp_sanitze(decodeURIComponent(req.params.tag))
+    'tag': decodeURIComponent(hlp_sanitze(req.params.tag))
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
