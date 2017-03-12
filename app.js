@@ -23,6 +23,15 @@ app.use('/', index);
 app.use('/syslog', syslog);
 app.use('/dns', dns);
 
+// DEBUG Route, Automatically Disabled on Production Mode
+app.get('/routes', (req, res, next) => {
+  if (req.app.get('env') === 'development') {
+    res.json(app._router.stack);
+  } else {
+    return next();
+  }
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   let err = new Error('Not Found');
@@ -36,7 +45,7 @@ app.use(function(err, req, res, next) {
     return next(err);
   }
 
-  // render the error page
+  // render the error JSON Object
   res.status(err.status || 500).json(err);
 });
 

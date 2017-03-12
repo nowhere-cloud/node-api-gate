@@ -231,6 +231,11 @@
       "from": "inherits@>=2.0.1 <2.1.0",
       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
     },
+    "ip": {
+      "version": "1.1.5",
+      "from": "ip@latest",
+      "resolved": "https://registry.npmjs.org/ip/-/ip-1.1.5.tgz"
+    },
     "ipaddr.js": {
       "version": "1.2.0",
       "from": "ipaddr.js@1.2.0",
