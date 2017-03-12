@@ -1,5 +1,5 @@
 'use strict';
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   var DNS = sequelize.define('dns_records', {
     type: { type: DataTypes.STRING(4), allowNull: false, field: 'type' },
     name: { type: DataTypes.STRING(64), allowNull: false },

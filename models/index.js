@@ -9,15 +9,17 @@ const sequelize = new Sequelize('mysql://' + process.env.MYSQL_USER + ':' + proc
 
 fs
   .readdirSync(__dirname)
-  .filter(function(file) {
+  .filter((file) => {
+    console.log(file);
     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
-  .forEach(function(file) {
-    var model = sequelize['import'](path.join(__dirname, file));
+  .forEach((file) => {
+    let model = sequelize['import'](path.join(__dirname, file));
+    console.log(model);
     db[model.name] = model;
   });
 
-Object.keys(db).forEach(function(modelName) {
+Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
