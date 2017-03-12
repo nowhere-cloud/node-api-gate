@@ -5,10 +5,16 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
+/**
+ * Controllers
+ */
 const index = require('./controller/index');
 const syslog = require('./controller/syslog');
 const dns = require('./controller/dns');
 
+/**
+ * App Core
+ */
 const app = express();
 
 app.use(logger('common'));
@@ -22,15 +28,6 @@ app.use(cookieParser());
 app.use('/', index);
 app.use('/syslog', syslog);
 app.use('/dns', dns);
-
-// DEBUG Route, Automatically Disabled on Production Mode
-app.get('/routes', (req, res, next) => {
-  if (req.app.get('env') === 'development') {
-    res.json(app._router.stack);
-  } else {
-    return next();
-  }
-});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

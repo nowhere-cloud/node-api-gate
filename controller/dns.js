@@ -2,25 +2,10 @@
 
 const express = require('express');
 const router = express.Router();
-const sqlize = require('sequelize');
-const db_con = new sqlize('mysql://' + process.env.MYSQL_USER + ':' + process.env.MYSQL_PASS + '@mysql/' + process.env.MYSQL_DB);
+const models  = require('../models');
 const qs = require('querystring');
-const Schema = require('../model/dns');
 const Rabbit = require('../helper/amqp-sender');
 const IP = require('ip');
-
-/**
- * Prepare Table, and query model
- */
-const DNS = db_con.define(Schema.tblname, Schema.tblschema, Schema.tblopts);
-const tmr = setInterval(() => {
-  db_con.authenticate().then((rsvp) => {
-    DNS.sync();
-    clearInterval(tmr);
-  }).catch(() => {
-    console.error('Waiting for Database to be Booted');
-  });
-}, 1000);
 
 /**
  * Route Preprocess: Add JSON Header to reduce code dupe
@@ -56,7 +41,7 @@ const hlp_rabbit = new Rabbit('dns-in');
  * for testing the MySQL is alive or dead
  */
 router.get('/', (req, res, next) => {
-  DNS.findAll().then((rsvp) => {
+  models.dns_records.findAll().then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
     return next(err);
@@ -67,7 +52,7 @@ router.get('/', (req, res, next) => {
  * Get ONE Entry by ID
  */
 router.get('/:id', (req, res, next) => {
-  DNS.findById(hlp_sanitze(req.params.id)).then((rsvp) => {
+  models.dns_records.findById(hlp_sanitze(req.params.id)).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
     return next(err);
@@ -76,7 +61,7 @@ router.get('/:id', (req, res, next) => {
 
 router.get('/search/name/:name', (req, res, next) => {
   if (hlp_check(req.params.name)) {
-    DNS.findAll({
+    models.dns_records.findAll({
       where: {
         name: hlp_sanitze(req.params.name)
       }
@@ -92,7 +77,7 @@ router.get('/search/name/:name', (req, res, next) => {
 
 router.get('/search/ipv4/:ipv4', (req, res, next) => {
   if (IP.isV4Format(req.params.ipv4)) {
-    DNS.findAll({
+    models.dns_records.findAll({
       where: {
         ipv4address: hlp_sanitze(req.params.ipv4)
       }
@@ -107,10 +92,10 @@ router.get('/search/ipv4/:ipv4', (req, res, next) => {
 });
 
 router.get('/search/ipv4/:ipv6', (req, res, next) => {
-  if (IP.isV6Format(decodeURIComponent(req.params.ipv6))) {
-    DNS.findAll({
+  if (IP.isV6Format(req.params.ipv6)) {
+    models.dns_records.findAll({
       where: {
-        ipv4address: hlp_sanitze(decodeURIComponent(req.params.ipv6))
+        ipv4address: decodeURIComponent(hlp_sanitze(req.params.ipv6))
       }
     }).then((rsvp) => {
       res.json(rsvp);
@@ -127,7 +112,7 @@ router.get('/search/ipv4/:ipv6', (req, res, next) => {
  * Health Check Endpoint.
  */
 router.get('/stats', (req, res, next) => {
-  DNS.describe().then((rsvp) => {
+  models.dns_records.describe().then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
     return next(err);

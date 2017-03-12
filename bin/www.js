@@ -9,6 +9,7 @@
 const app = require('../app');
 const debug = require('debug')('node-apimanager:server');
 const http = require('http');
+const models = require('../models');
 
 /**
  * Get port from environment and store in Express.
@@ -25,11 +26,23 @@ const server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
+ * sync() will create all table if they doesn't exist in database
  */
+const timer = setInterval(() => {
+  models.sequelize.authenticate().then(() => {
+    console.info('Database Ready, Executing Migration');
+    models.sequelize.sync();
+    clearInterval(timer);
+  }).catch(() => {
+    console.error('Waiting for Database...');
+  });
+}, 1000);
 
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+
 
 /**
  * Normalize a port into a number, string, or false.
@@ -66,12 +79,12 @@ function onError(error) {
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
-    case 'EACCES':
-      throw new Error(bind + ' requires elevated privileges');
-    case 'EADDRINUSE':
-      throw new Error(bind + ' is already in use');
-    default:
-      throw error;
+  case 'EACCES':
+    throw new Error(bind + ' requires elevated privileges');
+  case 'EADDRINUSE':
+    throw new Error(bind + ' is already in use');
+  default:
+    throw error;
   }
 }
 
