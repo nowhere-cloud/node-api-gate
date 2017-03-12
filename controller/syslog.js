@@ -77,8 +77,6 @@ router.get('/tag', (req, res, next) => {
 });
 
 router.get('/tag/:tag', pp_json_header, (req, res, next) => {
-  res.setHeader('X-PARAM-R', req.params.tag);
-  res.setHeader('X-PARAM-S', decodeURIComponent(hlp_sanitze(req.params.tag)));
   let index = 0;
   let stream = Syslog.find({
     'tag': decodeURIComponent(hlp_sanitze(req.params.tag))
