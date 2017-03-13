@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Syslog = require('../models-mongo/syslog');
-const sanitizer = require('sanitize')();
+const sanitizer = require('sanitizer');
 
 /**
  * Mongoose Stuffs
@@ -25,7 +25,7 @@ const pp_json_header = (req, res, next) => {
  * @return String            Sanitzed String
  */
 const hlp_sanitze = (raw_string) => {
-  return sanitizer.value(raw_string, 'string');
+  return sanitizer.sanitize(raw_string);
 };
 
 /**
@@ -79,7 +79,7 @@ router.get('/tag', (req, res, next) => {
 router.get('/tag/:tag', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
-    'tag': decodeURIComponent(hlp_sanitze(req.params.tag))
+    'tag': hlp_sanitze(req.params.tag)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {

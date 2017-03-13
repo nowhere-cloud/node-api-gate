@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const models  = require('../models');
-const sanitizer = require('sanitize')();
+const sanitizer = require('sanitizer');
 const Rabbit = require('../helper/amqp-sender');
 const IP = require('ip');
 
@@ -21,7 +21,7 @@ const pp_json_header = (req, res, next) => {
  * @return String            Sanitzed String
  */
 const hlp_sanitze = (raw_string) => {
-  return sanitizer.value(raw_string, 'string');
+  return sanitizer.sanitize(raw_string);
 };
 
 /**
