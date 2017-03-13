@@ -4,7 +4,6 @@ const express = require('express');
 const router = express.Router();
 const models  = require('../models');
 const Sanitizer = require('../helper/strig-sanitize');
-const IP = require('ip');
 
 /**
  * SubApp for handling Search Request
