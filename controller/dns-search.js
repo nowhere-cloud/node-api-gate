@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const models  = require('../models');
 
-const IP = require('ip');
+const IP = require('ip-address');
 const Sanitizer = require('../helper/strig-sanitize');
 
 /**
@@ -33,10 +33,11 @@ router.get('/name/:name', (req, res, next) => {
  * @type {Object}
  */
 router.get('/ipv4/:ipv4', (req, res, next) => {
-  if (IP.isV4Format(req.params.ipv4)) {
+  let ip = new IP.Address4(req.params.ipv4);
+  if (ip.isValid()) {
     models.dns_records.findAll({
       where: {
-        ipv4address: Sanitizer.sanitize(req.params.ipv4)
+        ipv4address: ip.correctForm()
       }
     }).then((rsvp) => {
       res.json(rsvp);
@@ -52,11 +53,12 @@ router.get('/ipv4/:ipv4', (req, res, next) => {
  * Search by IPv6
  * @type {Object}
  */
-router.get('/ipv4/:ipv6', (req, res, next) => {
-  if (IP.isV6Format(req.params.ipv6)) {
+router.get('/ipv6/:ipv6', (req, res, next) => {
+  let ip = new IP.Address6(req.params.ipv6);
+  if (ip.isValid()) {
     models.dns_records.findAll({
       where: {
-        ipv4address: Sanitizer.sanitize(req.params.ipv6)
+        ipv6address: { $in: [ip.correctForm(), ip.to4in6()]}
       }
     }).then((rsvp) => {
       res.json(rsvp);

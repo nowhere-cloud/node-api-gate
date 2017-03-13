@@ -238,10 +238,10 @@
       "from": "inherits@>=2.0.1 <2.1.0",
       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
     },
-    "ip": {
-      "version": "1.1.5",
-      "from": "ip@>=1.1.5 <2.0.0",
-      "resolved": "https://registry.npmjs.org/ip/-/ip-1.1.5.tgz"
+    "ip-address": {
+      "version": "5.8.6",
+      "from": "ip-address@latest",
+      "resolved": "https://registry.npmjs.org/ip-address/-/ip-address-5.8.6.tgz"
     },
     "ipaddr.js": {
       "version": "1.2.0",
@@ -263,6 +263,11 @@
       "from": "isexe@>=1.1.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/isexe/-/isexe-1.1.2.tgz"
     },
+    "jsbn": {
+      "version": "0.1.0",
+      "from": "jsbn@0.1.0",
+      "resolved": "https://registry.npmjs.org/jsbn/-/jsbn-0.1.0.tgz"
+    },
     "kareem": {
       "version": "1.2.1",
       "from": "kareem@1.2.1",
@@ -272,6 +277,31 @@
       "version": "4.17.4",
       "from": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz",
       "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz"
+    },
+    "lodash.find": {
+      "version": "4.6.0",
+      "from": "lodash.find@>=4.6.0 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash.find/-/lodash.find-4.6.0.tgz"
+    },
+    "lodash.max": {
+      "version": "4.0.1",
+      "from": "lodash.max@>=4.0.1 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash.max/-/lodash.max-4.0.1.tgz"
+    },
+    "lodash.merge": {
+      "version": "4.6.0",
+      "from": "lodash.merge@>=4.6.0 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash.merge/-/lodash.merge-4.6.0.tgz"
+    },
+    "lodash.padstart": {
+      "version": "4.6.1",
+      "from": "lodash.padstart@>=4.6.1 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash.padstart/-/lodash.padstart-4.6.1.tgz"
+    },
+    "lodash.repeat": {
+      "version": "4.1.0",
+      "from": "lodash.repeat@>=4.1.0 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash.repeat/-/lodash.repeat-4.1.0.tgz"
     },
     "lru-cache": {
       "version": "4.0.2",
@@ -569,6 +599,11 @@
       "version": "1.0.1",
       "from": "sliced@1.0.1",
       "resolved": "https://registry.npmjs.org/sliced/-/sliced-1.0.1.tgz"
+    },
+    "sprintf-js": {
+      "version": "1.0.3",
+      "from": "sprintf-js@>=1.0.3 <2.0.0",
+      "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz"
     },
     "sqlstring": {
       "version": "2.2.0",
