@@ -7,8 +7,8 @@ const debug = require('debug')('node-apimanager:amqp-sender');
 class Rabbit {
   /**
    * Prepare Message Sender
-   * @param  String target Message target
-   * @return null
+   * @param  {String} target Message target
+   * @return {null}
    */
   constructor(target) {
     this.target = target;
@@ -16,8 +16,8 @@ class Rabbit {
 
   /**
    * Send Message to RabbitMQ
-   * @param  String msg    Message Payload
-   * @return null
+   * @param  {String} msg    Message Payload
+   * @return {null}
    */
   send(msg) {
     let active_uuid = uuid();

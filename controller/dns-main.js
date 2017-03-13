@@ -9,7 +9,6 @@ const Sanitizer = require('../helper/strig-sanitize');
  * SubApp for handling some group of functions
  */
 const search = require('./dns-search');
-const report = require('./dns-report');
 
 /**
  * Route Preprocess: Add JSON Header to reduce code dupe
@@ -47,8 +46,6 @@ router.get('/stats', (req, res, next) => {
  * forward all search to related SubApp
  */
 router.use('/search', search);
-
-router.use('/report', report);
 
 /**
  * Get ONE Entry by ID

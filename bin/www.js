@@ -87,10 +87,12 @@ function onListening() {
 const timer = setInterval(() => {
   models.sequelize.authenticate().then(() => {
     console.info('Database Ready, Executing Migration');
-    models.sequelize.sync();
-    clearInterval(timer);
+    models.sequelize.sync().then(() => {
+      console.info('Database Structure Populated');
+      clearInterval(timer);
+    });
   }).catch(() => {
-    console.error('Waiting for Database...');
+    console.error('Waiting for Database... Retrying in a 1-sec interval...');
   });
 }, 1000);
 
