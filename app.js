@@ -10,7 +10,7 @@ const bodyParser = require('body-parser');
  */
 const index = require('./controller/index');
 const syslog = require('./controller/syslog');
-const dns = require('./controller/dns');
+const dns = require('./controller/dns-main');
 
 /**
  * App Core

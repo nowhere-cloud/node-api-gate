@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Syslog = require('../models-mongo/syslog');
-const sanitizer = require('sanitizer');
+const Sanitizer = require('../helper/strig-sanitize');
 
 /**
  * Mongoose Stuffs
@@ -17,15 +17,6 @@ mongoose.connect(process.env.MONGODB_URI);
 const pp_json_header = (req, res, next) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   next();
-};
-
-/**
- * Sanitze Input String
- * @param  String raw_string Raw String, such as from user input
- * @return String            Sanitzed String
- */
-const hlp_sanitze = (raw_string) => {
-  return sanitizer.sanitize(raw_string);
 };
 
 /**
@@ -79,7 +70,7 @@ router.get('/tag', (req, res, next) => {
 router.get('/tag/:tag', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
-    'tag': hlp_sanitze(req.params.tag)
+    'tag': Sanitizer.sanitize(req.params.tag)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
@@ -112,7 +103,7 @@ router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
   let index = 0;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   let stream = Syslog.find({
-    'hostname': hlp_sanitze(req.params.hostname)
+    'hostname': Sanitizer.sanitize(req.params.hostname)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
@@ -144,7 +135,7 @@ router.get('/facility', (req, res, next) => {
 router.get('/facility/:facility', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
-    'facility': hlp_sanitze(req.params.facility)
+    'facility': Sanitizer.sanitize(req.params.facility)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
@@ -176,7 +167,7 @@ router.get('/severity', (req, res, next) => {
 router.get('/severity/:severity', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Syslog.find({
-    'severity': hlp_sanitze(req.params.severity)
+    'severity': Sanitizer.sanitize(req.params.severity)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
@@ -194,7 +185,7 @@ router.get('/severity/:severity', pp_json_header, (req, res, next) => {
  */
 
 router.get('/:id', (req, res, next) => {
-  Syslog.findById(hlp_sanitze(req.params.id), (err, doc) => {
+  Syslog.findById(Sanitizer.sanitize(req.params.id), (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
