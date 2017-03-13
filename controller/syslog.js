@@ -184,7 +184,7 @@ router.get('/severity/:severity', pp_json_header, (req, res, next) => {
  * GET one record from Syslog Dataset
  */
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id([0-9a-f]{24,})', (req, res, next) => {
   Syslog.findById(Sanitizer.sanitize(req.params.id), (err, doc) => {
     if (err) return next(err);
     res.json(doc);

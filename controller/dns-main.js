@@ -50,7 +50,7 @@ router.use('/search', search);
 /**
  * Get ONE Entry by ID
  */
-router.get('/:id', (req, res, next) => {
+router.get('/:id(\d*)', (req, res, next) => {
   models.dns_records.findById(Sanitizer.sanitize(req.params.id)).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
