@@ -2,14 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
-const Syslog = require('../models-mongo/syslog');
+const Syslog = require('../models-mongo').Syslog;
 const Sanitizer = require('../helper/strig-sanitize');
-
-/**
- * Mongoose Stuffs
- */
-mongoose.connect(process.env.MONGODB_URI);
 
 /**
  * Route Preprocess: Add JSON Header to reduce code dupe
