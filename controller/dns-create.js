@@ -13,19 +13,17 @@ const checker = require('../helper/dns-check');
 router.route('/')
   .post((req, res, next) => {
     checker.checksubmit(req.body).then((parsed) => {
-      let instance = models.dns_records.create(parsed, {}).then(() => {
-        res.json(instance.get());
+      let instance = models.dns_records.create(parsed, {});
+      instance.then(() => {
+        res.sendStatus(201);
       }).catch((err) => {
-        next(err);
+        return next(err);
       });
     }).catch((err) => {
-      next(err);
+      return next(err);
     });
   })
   .get((req, res, next) => {
-    /**
-     * Get should not be processed on create
-     */
     res.sendStatus(400);
   });
 

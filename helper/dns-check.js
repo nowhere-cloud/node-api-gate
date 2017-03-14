@@ -101,6 +101,11 @@ const ip6possibilities = (raw_ip6) => {
   return [ip4in6(raw_ip6), ip6correctForm(raw_ip6)];
 };
 
+/**
+ * Sanitize and Check Submitted DNS Record
+ * @param  {Object} input_object JSON Object
+ * @return {Promise}
+ */
 const checksubmit = (input_object) => {
   let promise = new SMBC((fulfill, reject) => {
     if (!input_object.hasOwnProperty('type') || !input_object.hasOwnProperty('name')) {
@@ -126,6 +131,25 @@ const checksubmit = (input_object) => {
   return promise;
 };
 
+/**
+ * Parse and Sanitize DNS Entry ID, ported from Express bin/www NormalizePort
+ * @param  {String} val Un-Sanitized Record ID
+ * @return {Promise}
+ */
+const normalize_id = (val) => {
+  let id = parseInt(val, 10);
+  let promise = new SMBC((fulfill, reject) => {
+    if (isNaN(id)) {
+      reject('INVALID_ID');
+    }
+    if (id > 0) {
+      fulfill(id);
+    }
+  });
+  return promise;
+};
+
+
 module.exports = {
   sanitize: sanitize,
   domaincheck: domaincheck,
@@ -134,5 +158,6 @@ module.exports = {
   ip4correctForm: ip4correctForm,
   ip6correctForm: ip6correctForm,
   ip6possibilities: ip6possibilities,
-  checksubmit: checksubmit
+  checksubmit: checksubmit,
+  normalizeid: normalize_id
 };

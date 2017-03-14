@@ -53,10 +53,14 @@ router.use('/create', create);
 /**
  * Get ONE Entry by ID
  */
-router.route('/:id(\d*)')
+router.route('/:id')
   .get((req, res, next) => {
-    models.dns_records.findById(Checker.sanitize(req.params.id)).then((rsvp) => {
-      res.json(rsvp);
+    Checker.normalizeid(req.params.id).then((id) => {
+      models.dns_records.findById(id).then((rsvp) => {
+        res.json(rsvp);
+      }).catch((err) => {
+        return next(err);
+      });
     }).catch((err) => {
       return next(err);
     });
@@ -65,16 +69,16 @@ router.route('/:id(\d*)')
     let instance = models.dns_records.findById(Checker.sanitize(req.params.id));
     instance.then(() => {
       Checker.checksubmit(req.body).then((parsed) => {
-        instance.set(req.body).then(() => {
-          res.json(instance.get());
+        instance.set(parsed).then(() => {
+          res.sendStatus(200);
         }).catch((err) => {
-          next(err);
+          return next(err);
         });
       }).catch((err) => {
-        next(err);
+        return next(err);
       });
     }).catch((err) => {
-      next(err);
+      return next(err);
     });
   })
   .delete((req, res, next) => {
@@ -83,10 +87,10 @@ router.route('/:id(\d*)')
       instance.destroy().then(() => {
         res.sendStatus(200);
       }).catch((err) => {
-        next(err);
+        return next(err);
       });
     }).catch((err) => {
-      next(err);
+      return next(err);
     });
   });
 
