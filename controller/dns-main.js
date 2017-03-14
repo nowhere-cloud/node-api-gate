@@ -56,39 +56,35 @@ router.use('/create', create);
 router.route('/:id')
   .get((req, res, next) => {
     Checker.normalizeid(req.params.id).then((id) => {
-      models.dns_records.findById(id).then((rsvp) => {
-        res.json(rsvp);
-      }).catch((err) => {
-        return next(err);
-      });
+      return models.dns_records.findById(id);
+    }).then((rsvp) => {
+      res.json(rsvp);
     }).catch((err) => {
       return next(err);
     });
-  })
-  .patch((req, res, next) => {
-    let instance = models.dns_records.findById(Checker.sanitize(req.params.id));
-    instance.then(() => {
-      Checker.checksubmit(req.body).then((parsed) => {
-        instance.set(parsed).then(() => {
-          res.sendStatus(200);
-        }).catch((err) => {
-          return next(err);
-        });
-      }).catch((err) => {
-        return next(err);
-      });
+  }).patch((req, res, next) => {
+    let uid = 0;
+    let obj = {};
+    Checker.normalizeid(req.params.id).then((id) => {
+      uid = id;
+      return Checker.checksubmit(req.body);
+    }).then((parsed) => {
+      obj = parsed;
+      return models.dns_records.findById(uid);
+    }).then((instance) => {
+      return instance.set(obj);
+    }).then((result) => {
+      res.json(result);
     }).catch((err) => {
       return next(err);
     });
-  })
-  .delete((req, res, next) => {
-    let instance = models.dns_records.findById(Checker.sanitize(req.params.id));
-    instance.then(() => {
-      instance.destroy().then(() => {
-        res.sendStatus(200);
-      }).catch((err) => {
-        return next(err);
-      });
+  }).delete((req, res, next) => {
+    Checker.normalizeid(req.params.id).then((id) => {
+      return models.dns_records.findById(id);
+    }).then((instance) => {
+      return instance.destroy();
+    }).then((result) => {
+      res.json(result);
     }).catch((err) => {
       return next(err);
     });
