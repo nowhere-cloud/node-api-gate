@@ -34,7 +34,11 @@ router.get('/', pp_json_header, (req, res, next) => {
  * GET DB Stat as Status Check
  */
 router.get('/stats', (req, res, next) => {
-  res.json(Mongo.mongoose.connection.readyState);
+  if (Mongo.mongoose.connection.readyState) {
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(503);
+  }
 });
 
 /**
