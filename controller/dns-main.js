@@ -72,7 +72,6 @@ router.route('/:id')
       obj = parsed;
       return models.dns_records.findById(uid);
     }).then((instance) => {
-      console.log(obj);
       return instance.update(obj);
     }).then((result) => {
       res.json(result);
