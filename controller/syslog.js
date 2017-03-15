@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Syslog = require('../models-mongo').Syslog;
+const Mongo = require('../models-mongo');
 const Sanitizer = require('../helper/strig-sanitize');
 
 /**
@@ -18,7 +18,7 @@ const pp_json_header = (req, res, next) => {
  */
 router.get('/', pp_json_header, (req, res, next) => {
   let index = 0;
-  let stream = Syslog.find({}, null, { sort: { $natural: 1 } }).lean().cursor();
+  let stream = Mongo.Syslog.find({}, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
     res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
@@ -34,14 +34,7 @@ router.get('/', pp_json_header, (req, res, next) => {
  * GET DB Stat as Status Check
  */
 router.get('/stats', (req, res, next) => {
-  Syslog.collection.stats((err, doc) => {
-    if (err) return next(err);
-    // Remove useless Key from doc
-    delete doc.wiredTiger;
-    delete doc.indexDetails;
-    // Render the result
-    res.json(doc);
-  });
+  res.json(Mongo.mongoose.connection.readyState);
 });
 
 /**
@@ -49,7 +42,7 @@ router.get('/stats', (req, res, next) => {
  * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
  */
 router.get('/tag', (req, res, next) => {
-  Syslog.aggregate([
+  Mongo.Syslog.aggregate([
     { $group: {
       _id: '$tag',
       count: { $sum: 1 }
@@ -63,7 +56,7 @@ router.get('/tag', (req, res, next) => {
 
 router.get('/tag/:tag', pp_json_header, (req, res, next) => {
   let index = 0;
-  let stream = Syslog.find({
+  let stream = Mongo.Syslog.find({
     'tag': Sanitizer.sanitize(req.params.tag)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
@@ -81,7 +74,7 @@ router.get('/tag/:tag', pp_json_header, (req, res, next) => {
  * GET records from Syslog Dataset by hostname
  */
 router.get('/hostname', (req, res, next) => {
-  Syslog.aggregate([
+  Mongo.Syslog.aggregate([
     { $group: {
       _id: '$hostname',
       count: { $sum: 1 }
@@ -96,7 +89,7 @@ router.get('/hostname', (req, res, next) => {
 router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
   let index = 0;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  let stream = Syslog.find({
+  let stream = Mongo.Syslog.find({
     'hostname': Sanitizer.sanitize(req.params.hostname)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
@@ -114,7 +107,7 @@ router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
  * Get Facilities of entries in the Syalog Collection
  */
 router.get('/facility', (req, res, next) => {
-  Syslog.aggregate([
+  Mongo.Syslog.aggregate([
     { $group: {
       _id: '$facility',
       count: { $sum: 1 }
@@ -128,7 +121,7 @@ router.get('/facility', (req, res, next) => {
 
 router.get('/facility/:facility', pp_json_header, (req, res, next) => {
   let index = 0;
-  let stream = Syslog.find({
+  let stream = Mongo.Syslog.find({
     'facility': Sanitizer.sanitize(req.params.facility)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
@@ -146,7 +139,7 @@ router.get('/facility/:facility', pp_json_header, (req, res, next) => {
  * Get Serverity of entries in the Syalog Collection
  */
 router.get('/severity', (req, res, next) => {
-  Syslog.aggregate([
+  Mongo.Syslog.aggregate([
     { $group: {
       _id: '$severity',
       count: { $sum: 1 }
@@ -160,7 +153,7 @@ router.get('/severity', (req, res, next) => {
 
 router.get('/severity/:severity', pp_json_header, (req, res, next) => {
   let index = 0;
-  let stream = Syslog.find({
+  let stream = Mongo.Syslog.find({
     'severity': Sanitizer.sanitize(req.params.severity)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
@@ -179,7 +172,7 @@ router.get('/severity/:severity', pp_json_header, (req, res, next) => {
  */
 
 router.get('/:id([0-9a-f]{24,})', (req, res, next) => {
-  Syslog.findById(Sanitizer.sanitize(req.params.id), (err, doc) => {
+  Mongo.Syslog.findById(Sanitizer.sanitize(req.params.id), (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });

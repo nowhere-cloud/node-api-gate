@@ -36,10 +36,10 @@ router.get('/', (req, res, next) => {
  * Health Check Endpoint.
  */
 router.get('/stats', (req, res, next) => {
-  models.dns_records.describe().then((rsvp) => {
-    res.json(rsvp);
-  }).catch((err) => {
-    return next(err);
+  models.sequelize.authenticate().then(() => {
+    res.sendStatus(200);
+  }).catch(() => {
+    res.sendStatus(503);
   });
 });
 

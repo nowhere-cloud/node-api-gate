@@ -10,4 +10,5 @@ mongoose.connect(process.env.MONGODB_URI);
 /**
  * Expose the Model
  */
+module.exports.mongoose = mongoose;
 module.exports.Syslog = syslog;
