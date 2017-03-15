@@ -10,10 +10,6 @@ const sequelize = new Sequelize('mysql://' + process.env.MYSQL_USER + ':' + proc
   // https://stackoverflow.com/questions/28927836/prevent-sequelize-from-outputting-sql-to-the-console-on-execution-of-query
   logging: false
 });
-const PaperTrail = require('sequelize-paper-trail')(sequelize, {});
-
-// Init Audit Trail Model
-PaperTrail.defineModels();
 
 fs
   .readdirSync(__dirname)
@@ -26,7 +22,6 @@ fs
   });
 
 Object.keys(db).forEach((modelName) => {
-  db[modelName].hasPaperTrail();
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
