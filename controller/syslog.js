@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const Mongo = require('../models-mongo');
-const Sanitizer = require('../helper/strig-sanitize');
+const Normalize = require('../helper/syslog-normalize');
 
 /**
  * Route Preprocess: Add JSON Header to reduce code dupe
@@ -61,7 +61,7 @@ router.get('/tag', (req, res, next) => {
 router.get('/tag/:tag', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Mongo.Syslog.find({
-    'tag': Sanitizer.sanitize(req.params.tag)
+    'tag': Normalize.sanitize(req.params.tag)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
@@ -94,7 +94,7 @@ router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
   let index = 0;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   let stream = Mongo.Syslog.find({
-    'hostname': Sanitizer.sanitize(req.params.hostname)
+    'hostname': Normalize.sanitize(req.params.hostname)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
@@ -126,7 +126,7 @@ router.get('/facility', (req, res, next) => {
 router.get('/facility/:facility', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Mongo.Syslog.find({
-    'facility': Sanitizer.sanitize(req.params.facility)
+    'facility': Normalize.sanitize(req.params.facility)
   }, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
   stream.on('data', (doc) => {
@@ -157,16 +157,21 @@ router.get('/severity', (req, res, next) => {
 
 router.get('/severity/:severity', pp_json_header, (req, res, next) => {
   let index = 0;
-  let stream = Mongo.Syslog.find({
-    'severity': Sanitizer.sanitize(req.params.severity)
-  }, null, { sort: { $natural: 1 } }).lean().cursor();
-  res.write('[');
-  stream.on('data', (doc) => {
-    res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
-  }).on('end', () => {
-    res.write(']');
-    res.end();
-  }).on('error', (err) => {
+  Normalize.severity(req.params.severity).then((severity) => {
+    return Mongo.Syslog.find({
+      'severity': severity
+    }, null, { sort: { $natural: 1 } }).lean().cursor();
+  }).then((stream) => {
+    res.write('[');
+    stream.on('data', (doc) => {
+      res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
+    }).on('end', () => {
+      res.write(']');
+      res.end();
+    }).on('error', (err) => {
+      return next(err);
+    });
+  }).catch((err) => {
     return next(err);
   });
 });
@@ -176,7 +181,7 @@ router.get('/severity/:severity', pp_json_header, (req, res, next) => {
  */
 
 router.get('/:id([0-9a-f]{24,})', (req, res, next) => {
-  Mongo.Syslog.findById(Sanitizer.sanitize(req.params.id), (err, doc) => {
+  Mongo.Syslog.findById(Normalize.sanitize(req.params.id), (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });

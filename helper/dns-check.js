@@ -109,16 +109,28 @@ const ip6possibilities = (raw_ip6) => {
 const checksubmit = (input_object) => {
   let promise = new SMBC((fulfill, reject) => {
     if (!input_object.hasOwnProperty('type') || !input_object.hasOwnProperty('name')) {
-      reject('FIELDS_MISSING');
+      reject({
+        status: 400,
+        error: 'FIELDS_MISSING'
+      });
     }
     if (input_object.type === '' || input_object.name === '') {
-      reject('FIELDS_EMPTY');
+      reject({
+        status: 400,
+        error: 'FIELDS_EMPTY'
+      });
     }
     if (!domaincheck(input_object.name)) {
-      reject('NAME_INVALID');
+      reject({
+        status: 400,
+        error: 'INVALID_DOMAIN_NAME'
+      });
     }
     if (!check_ip4(input_object.ipv4address) || !check_ip6(input_object.ipv6address)) {
-      reject('IP_INVALID');
+      reject({
+        status: 400,
+        error: 'INVALID_IP'
+      });
     }
     fulfill({
       type: input_object.type,
@@ -140,7 +152,10 @@ const normalize_id = (val) => {
   let id = parseInt(val, 10);
   let promise = new SMBC((fulfill, reject) => {
     if (isNaN(id)) {
-      reject('INVALID_ID');
+      reject({
+        status: 400,
+        error: 'INVALID_ID'
+      });
     }
     if (id > 0) {
       fulfill(id);
