@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     ],
     classMethods: {
       associate: function(models) {
-        VMTmpl.hasOne(models.vm_distros, { as: 'distro_type' });
+        VMTmpl.belongsTo(models.vm_distros, { as: 'distro_type' });
       }
     }
   });
