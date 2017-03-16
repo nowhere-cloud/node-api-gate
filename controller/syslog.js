@@ -162,7 +162,7 @@ router.get('/severity', (req, res, next) => {
 
 router.get('/severity/:severity', pp_json_header, (req, res, next) => {
   let index = 0;
-  Normalize.severity(req.params.severity).then((severity) => {
+  Normalize.facility(req.params.severity).then((severity) => {
     return Mongo.Syslog.find({
       'severity': severity
     }, null, { sort: { $natural: 1 } }).lean().cursor();
