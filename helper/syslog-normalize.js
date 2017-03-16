@@ -60,7 +60,7 @@ const ArrayFacilityIsContains = (string) => {
  * @return {Number}       String index
  */
 const ArrayFacilityPosition = (string) => {
-  return severity.indexOf(Sanitizer.sanitize(string.toLowerCase()));
+  return facility.indexOf(Sanitizer.sanitize(string.toLowerCase()));
 };
 
 /**
