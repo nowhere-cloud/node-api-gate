@@ -125,16 +125,21 @@ router.get('/facility', (req, res, next) => {
 
 router.get('/facility/:facility', pp_json_header, (req, res, next) => {
   let index = 0;
-  let stream = Mongo.Syslog.find({
-    'facility': Normalize.sanitize(req.params.facility)
-  }, null, { sort: { $natural: 1 } }).lean().cursor();
-  res.write('[');
-  stream.on('data', (doc) => {
-    res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
-  }).on('end', () => {
-    res.write(']');
-    res.end();
-  }).on('error', (err) => {
+  Normalize.severity(req.params.facility).then((facility) => {
+    return Mongo.Syslog.find({
+      'facility': facility
+    }, null, { sort: { $natural: 1 } }).lean().cursor();
+  }).then((stream) => {
+    res.write('[');
+    stream.on('data', (doc) => {
+      res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
+    }).on('end', () => {
+      res.write(']');
+      res.end();
+    }).on('error', (err) => {
+      return next(err);
+    });
+  }).catch((err) => {
     return next(err);
   });
 });
