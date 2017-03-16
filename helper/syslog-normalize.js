@@ -33,7 +33,7 @@ const sanitize = (raw_string) => {
  * @return {Boolean}
  */
 const ArraySeverityIsContains = (string) => {
-  return (severity.indexOf(Sanitizer.sanitize(string.toLowerCase())) > -1);
+  return severity.indexOf(Sanitizer.sanitize(string.toLowerCase())) > -1;
 };
 
 /**
@@ -51,7 +51,7 @@ const ArraySeverityPosition = (string) => {
  * @return {Boolean}
  */
 const ArrayFacilityIsContains = (string) => {
-  return (facility.indexOf(Sanitizer.sanitize(string.toLowerCase())) > -1);
+  return facility.indexOf(Sanitizer.sanitize(string.toLowerCase())) > -1;
 };
 
 /**
@@ -71,8 +71,8 @@ const ArrayFacilityPosition = (string) => {
 const normalizer_s = (raw_value) => {
   let s_type = parseInt(raw_value, 10);
   let promise = new Promise((fulfill, reject) => {
-    if (isNaN(s_type) && ArraySeverityIsContains(s_type)) {
-      fulfill(ArraySeverityPosition(s_type));
+    if (isNaN(s_type) && ArraySeverityIsContains(raw_value)) {
+      fulfill(ArraySeverityPosition(raw_value));
     } else if (s_type >= 0 && s_type <= 7) {
       fulfill(s_type);
     } else {
@@ -85,11 +85,16 @@ const normalizer_s = (raw_value) => {
   return promise;
 };
 
+/**
+ * Normalizing Facility Value to support search from word.
+ * @param  {String} raw_value Received Value from URI
+ * @return {Integer}          Parsed response
+ */
 const normalizer_f = (raw_value) => {
   let f_type = parseInt(raw_value, 10);
   let promise = new Promise((fulfill, reject) => {
-    if (isNaN(f_type) && ArrayFacilityIsContains(f_type)) {
-      fulfill(ArrayFacilityPosition(f_type));
+    if (isNaN(f_type) && ArrayFacilityIsContains(raw_value)) {
+      fulfill(ArrayFacilityPosition(raw_value));
     } else if (f_type >= 0 && f_type <= 23) {
       fulfill(f_type);
     } else {
