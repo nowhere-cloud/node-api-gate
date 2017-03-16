@@ -125,7 +125,7 @@ router.get('/facility', (req, res, next) => {
 
 router.get('/facility/:facility', pp_json_header, (req, res, next) => {
   let index = 0;
-  Normalize.severity(req.params.facility).then((facility) => {
+  Normalize.facility(req.params.facility).then((facility) => {
     return Mongo.Syslog.find({
       'facility': facility
     }, null, { sort: { $natural: 1 } }).lean().cursor();
@@ -162,7 +162,7 @@ router.get('/severity', (req, res, next) => {
 
 router.get('/severity/:severity', pp_json_header, (req, res, next) => {
   let index = 0;
-  Normalize.facility(req.params.severity).then((severity) => {
+  Normalize.severity(req.params.severity).then((severity) => {
     return Mongo.Syslog.find({
       'severity': severity
     }, null, { sort: { $natural: 1 } }).lean().cursor();
