@@ -84,18 +84,11 @@ function onListening() {
  * Listen on provided port, on all network interfaces.
  * sync() will create all table if they doesn't exist in database
  */
-const timer = setInterval(() => {
-  models.sequelize.authenticate().then(() => {
-    console.info('Database Ready, Executing Migration');
-    models.sequelize.sync().then(() => {
-      console.info('Database Structure Populated');
-      clearInterval(timer);
-    });
-  }).catch(() => {
-    console.error('Waiting for Database... Retrying in a 1-sec interval...');
-  });
-}, 1000);
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+models.sequelize.sync().then(() => {
+  console.info('Database Structure Populated, booting UP API');
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+}).catch((err) => {
+  throw new Error(err);
+});
