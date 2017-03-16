@@ -18,4 +18,4 @@ ENV MONGODB_URI=mongodb://mongo/nowhere \
 
 # ENTRYPOINT ["/usr/bin/supervisord", "-c", "/srv/supervisord.conf"]
 
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["npm", "start", "--production"]
