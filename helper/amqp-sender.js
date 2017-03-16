@@ -22,23 +22,21 @@ class Rabbit {
   send(msg) {
     let active_uuid = uuid();
     let target = this.target;
-    amqp.connect(process.env.AMQP_URI).then(
-      (conn) => conn.createChannel().then(
-        (ch) => {
-          let q = ch.assertQueue(target, {
-            durable: true
+    amqp.connect(process.env.AMQP_URI).then((conn) => {
+      return conn.createChannel().then((ch) => {
+        let q = ch.assertQueue(target, { durable: true });
+        return q.then(() => {
+          ch.sendToQueue(target, new Buffer.from(JSON.stringify(msg)), {
+            correlationId: active_uuid
           });
-          return q.then(() => {
-            ch.sendToQueue(target, new Buffer.from(JSON.stringify(msg)), {
-              correlationId: active_uuid
-            });
-            return ch.close();
-          });
-        }).finally(() => {
-          conn.close();
-        })).catch((err) => {
-          debug(err);
+          return ch.close();
         });
+      }).finally(() => {
+        conn.close();
+      });
+    }).catch((err) => {
+      debug(err);
+    });
     return active_uuid;
   }
 }
