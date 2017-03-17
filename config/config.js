@@ -19,6 +19,9 @@ module.exports = {
     // https://stackoverflow.com/questions/28927836/prevent-sequelize-from-outputting-sql-to-the-console-on-execution-of-query
     'logging': false
   },
-  'development-mongo': 'mongodb://localhost/nowhere',
-  'production-mongo': process.env.MONGODB_URI
+  'mongo': {
+    'development': 'mongodb://localhost/nowhere',
+    'test': 'mongodb://localhost/nowhere-test',
+    'production': process.env.MONGODB_URI
+  }
 };
