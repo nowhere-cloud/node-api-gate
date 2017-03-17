@@ -1,9 +1,11 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   var VMDist = sequelize.define('vm_distros', {
+    distroname: {
+      type: DataTypes.STRING(20)
+    },
     distro: {
-      type: DataTypes.STRING(10),
-      allowNull: false
+      type: DataTypes.ENUM('debianlike', 'rhlike', 'sleslike')
     }
   }, {
     timestamps: false,

@@ -3,7 +3,7 @@
 module.exports = {
   'development': {
     'dialect': 'sqlite',
-    'storage': ':memory:'
+    'storage': '/tmp/nowhere-development.sqlite'
   },
   'test': {
     'dialect': 'sqlite',
