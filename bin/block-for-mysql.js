@@ -10,7 +10,7 @@ const timer = setInterval(() => {
     console.info('Database Ready, Exiting...');
     clearInterval(timer);
   }).catch((err) => {
-    console.error(err);
+    console.error(err.message);
     console.error('Waiting for Database... Retrying in a 1-sec interval...');
   });
 }, 1000);
