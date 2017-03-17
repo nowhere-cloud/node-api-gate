@@ -1,11 +1,13 @@
 'use strict';
 const mongoose = require('mongoose');
-const syslog = require('./syslog.js');
+const syslog   = require('./syslog.js');
+const env      = (process.env.NODE_ENV || 'development') + '-mongo';
+const config   = require('../config/config')[env];
 
 /**
  * Connect to MongoDb
  */
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(config);
 
 /**
  * Expose the Model

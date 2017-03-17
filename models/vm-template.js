@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     indexes: [
       {
-        name: 'uuid',
+        name: 'vm-tpl-uuid',
         fields: ['uuid']
       }
     ],

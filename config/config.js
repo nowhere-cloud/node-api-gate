@@ -14,9 +14,11 @@ module.exports = {
     'password': process.env.MYSQL_PASS,
     'database': process.env.MYSQL_DB,
     'host': 'mysql',
-    'dialect': 'mysql',
+    'dialect': 'mysql2',
     // disable logging; default: console.log
     // https://stackoverflow.com/questions/28927836/prevent-sequelize-from-outputting-sql-to-the-console-on-execution-of-query
     'logging': false
-  }
+  },
+  'development-mongo': 'mongodb://localhost/nowhere',
+  'production-mongo': process.env.MONGODB_URI
 };
