@@ -3,6 +3,7 @@
 const amqp = require('amqplib');
 const uuid = require('uuid/v1');
 const debug = require('debug')('node-apimanager:amqp-sender');
+const Promise = require('bluebird');
 
 class Rabbit {
   /**

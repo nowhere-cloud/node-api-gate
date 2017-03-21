@@ -1,7 +1,7 @@
 'use strict';
 
 const Sanitizer = require('./strig-sanitize');
-const Promise = global.Promise;
+const Promise = require('bluebird');
 
 // Extracted from Syslog Sourcecode to make sure the value fits
 // RFC5424

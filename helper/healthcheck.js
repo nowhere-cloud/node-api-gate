@@ -1,8 +1,16 @@
 'use strict';
 
+/**
+ * Healthcheck module
+ * Based on
+ * https://www.tomas-dvorak.cz/posts/nodejs-request-without-dependencies/
+ * Code 500: Internal Server Error
+ * Code 503: Service Unavailable
+ */
+
 const https = require('https');
 const http = require('http');
-const Promise = global.Promise;
+const Promise = require('bluebird');
 
 /**
  * HTTP Healthcheck Helper
@@ -17,12 +25,17 @@ const http_health = (hostname, port, path) => {
       hostname: hostname,
       port: port,
       path: path
-    }, function(response) {
-      response.on('end', function() {
-        fulfill();
-      });
-    }).on('error', function(exception) {
-      reject(exception);
+    }, (response) => {
+      // handle http errors
+      if (response.statusCode < 200 || response.statusCode > 299) {
+        reject({ 
+          status: response.statusCode,
+          error: response.statusMessage
+        });
+      }
+      fulfill();
+    }).on('error', (exception) => {
+      reject({status: 503, error: exception.code });
     });
   });
   return promise;
@@ -33,24 +46,30 @@ const http_health = (hostname, port, path) => {
  * @param  {String} hostname Target Hostname
  * @param  {Number} port     Taget Port
  * @param  {String} path     Taget Path
- * @param  {Boolean} unsafe  Should I Check HTTPS Certificate?
+ * @param  {Boolean} unsafe  Turn Off Certificate Check?
  * @return {Promise}
  */
 const https_health = (hostname, port, path, unsafe) => {
   let promise = new Promise((fulfill, reject) => {
     https.get({
-      rejectUnauthorized: unsafe,
+      rejectUnauthorized: !unsafe,
       hostname: hostname,
       port: port,
       path: path
-    }, function(response) {
-      response.on('end', function() {
-        fulfill();
-      });
-    }).on('error', function(exception) {
-      reject(exception);
+    }, (response) => {
+      // handle http errors
+      if (response.statusCode < 200 || response.statusCode > 299) {
+        reject({ 
+          status: response.statusCode,
+          error: response.statusMessage
+        });
+      }
+      fulfill();
+    }).on('error', (exception) => {
+      reject({status: 503, error: exception.code });
     });
   });
+  return promise;
 };
 
 module.exports = {

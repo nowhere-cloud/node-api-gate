@@ -3,10 +3,9 @@
 const IP = require('ip-address');
 const Sanitizer = require('./strig-sanitize');
 /**
- * Aliasing Native Promise.
- * SMBC is a financial company.
+ * Load Bluebird Promise Library.
  */
-const Promise = global.Promise;
+const Promise = require('bluebird');
 
 /**
  * Proxy Function of String Sanitzing

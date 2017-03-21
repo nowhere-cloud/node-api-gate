@@ -38,8 +38,11 @@ Router.get('/', (req, res, next) => {
 Router.get('/stats', (req, res, next) => {
   Models.sequelize.authenticate().then(() => {
     res.sendStatus(200);
-  }).catch(() => {
-    res.sendStatus(503);
+  }).catch((err) => {
+    next({
+      status: 503,
+      error: err
+    });
   });
 });
 
