@@ -1,18 +1,18 @@
 
 'use strict';
 
-const express = require('express');
-const router = express.Router();
-const models  = require('../models');
-const checker = require('../helper/dns-check');
+const Express = require('express');
+const Router  = Express.Router();
+const Models  = require('../models');
+const Checker = require('../helper/dns-check');
 
 /**
  * Search by Name
  * @type {Object}
  */
-router.post('/', (req, res, next) => {
-  checker.checksubmit(req.body).then((parsed) => {
-    return models.dns_records.create(parsed, {});
+Router.post('/', (req, res, next) => {
+  Checker.checksubmit(req.body).then((parsed) => {
+    return Models.dns_records.create(parsed, {});
   }).then((result) => {
     res.status(201).json(result);
   }).catch((err) => {
@@ -21,4 +21,4 @@ router.post('/', (req, res, next) => {
 });
 
 
-module.exports = router;
+module.exports = Router;

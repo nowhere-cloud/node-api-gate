@@ -6,7 +6,7 @@ const Sanitizer = require('./strig-sanitize');
  * Aliasing Native Promise.
  * SMBC is a financial company.
  */
-const SMBC = global.Promise;
+const Promise = global.Promise;
 
 /**
  * Proxy Function of String Sanitzing
@@ -107,7 +107,7 @@ const ip6possibilities = (raw_ip6) => {
  * @return {Promise}
  */
 const checksubmit = (input_object) => {
-  let promise = new SMBC((fulfill, reject) => {
+  let promise = new Promise((fulfill, reject) => {
     if (!input_object.hasOwnProperty('type') || !input_object.hasOwnProperty('name')) {
       reject({
         status: 400,
@@ -150,7 +150,7 @@ const checksubmit = (input_object) => {
  */
 const normalize_id = (val) => {
   let id = parseInt(val, 10);
-  let promise = new SMBC((fulfill, reject) => {
+  let promise = new Promise((fulfill, reject) => {
     if (isNaN(id)) {
       reject({
         status: 400,

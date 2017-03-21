@@ -1,8 +1,8 @@
 'use strict';
 
-const express = require('express');
-const router = express.Router();
-const Mongo = require('../models-mongo');
+const Express   = require('express');
+const Router    = Express.Router();
+const Mongo     = require('../models-mongo');
 const Normalize = require('../helper/syslog-normalize');
 
 /**
@@ -16,7 +16,7 @@ const pp_json_header = (req, res, next) => {
 /**
  * GET All Syslog Records
  */
-router.get('/', pp_json_header, (req, res, next) => {
+Router.get('/', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Mongo.Syslog.find({}, null, { sort: { $natural: 1 } }).lean().cursor();
   res.write('[');
@@ -33,7 +33,7 @@ router.get('/', pp_json_header, (req, res, next) => {
 /**
  * GET DB Stat as Status Check
  */
-router.get('/stats', (req, res, next) => {
+Router.get('/stats', (req, res, next) => {
   if (Mongo.mongoose.connection.readyState) {
     res.sendStatus(200);
   } else {
@@ -45,7 +45,7 @@ router.get('/stats', (req, res, next) => {
  * Get Tags of entries in the Syalog Collection
  * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
  */
-router.get('/tag', (req, res, next) => {
+Router.get('/tag', (req, res, next) => {
   Mongo.Syslog.aggregate([
     { $group: {
       _id: '$tag',
@@ -58,7 +58,7 @@ router.get('/tag', (req, res, next) => {
   });
 });
 
-router.get('/tag/:tag', pp_json_header, (req, res, next) => {
+Router.get('/tag/:tag', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Mongo.Syslog.find({
     'tag': Normalize.sanitize(req.params.tag)
@@ -77,7 +77,7 @@ router.get('/tag/:tag', pp_json_header, (req, res, next) => {
 /**
  * GET records from Syslog Dataset by hostname
  */
-router.get('/hostname', (req, res, next) => {
+Router.get('/hostname', (req, res, next) => {
   Mongo.Syslog.aggregate([
     { $group: {
       _id: '$hostname',
@@ -90,7 +90,7 @@ router.get('/hostname', (req, res, next) => {
   });
 });
 
-router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
+Router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
   let index = 0;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   let stream = Mongo.Syslog.find({
@@ -110,7 +110,7 @@ router.get('/hostname/:hostname', pp_json_header, (req, res, next) => {
 /**
  * Get Facilities of entries in the Syalog Collection
  */
-router.get('/facility', (req, res, next) => {
+Router.get('/facility', (req, res, next) => {
   Mongo.Syslog.aggregate([
     { $group: {
       _id: '$facility',
@@ -123,7 +123,7 @@ router.get('/facility', (req, res, next) => {
   });
 });
 
-router.get('/facility/:facility', pp_json_header, (req, res, next) => {
+Router.get('/facility/:facility', pp_json_header, (req, res, next) => {
   let index = 0;
   Normalize.facility(req.params.facility).then((facility) => {
     return Mongo.Syslog.find({
@@ -147,7 +147,7 @@ router.get('/facility/:facility', pp_json_header, (req, res, next) => {
 /**
  * Get Serverity of entries in the Syalog Collection
  */
-router.get('/severity', (req, res, next) => {
+Router.get('/severity', (req, res, next) => {
   Mongo.Syslog.aggregate([
     { $group: {
       _id: '$severity',
@@ -160,7 +160,7 @@ router.get('/severity', (req, res, next) => {
   });
 });
 
-router.get('/severity/:severity', pp_json_header, (req, res, next) => {
+Router.get('/severity/:severity', pp_json_header, (req, res, next) => {
   let index = 0;
   Normalize.severity(req.params.severity).then((severity) => {
     return Mongo.Syslog.find({
@@ -185,11 +185,11 @@ router.get('/severity/:severity', pp_json_header, (req, res, next) => {
  * GET one record from Syslog Dataset
  */
 
-router.get('/:id([0-9a-f]{24,})', (req, res, next) => {
+Router.get('/:id([0-9a-f]{24,})', (req, res, next) => {
   Mongo.Syslog.findById(Normalize.sanitize(req.params.id), (err, doc) => {
     if (err) return next(err);
     res.json(doc);
   });
 });
 
-module.exports = router;
+module.exports = Router;

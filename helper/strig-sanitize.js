@@ -1,7 +1,7 @@
 
 'use strict';
 
-const sanitizer = require('sanitizer');
+const Sanitizer = require('sanitizer');
 
 /**
  * Sanitze Input String
@@ -9,7 +9,7 @@ const sanitizer = require('sanitizer');
  * @return {String}            Sanitzed String
  */
 const sanitize = (raw_string) => {
-  return sanitizer.sanitize(raw_string);
+  return Sanitizer.sanitize(raw_string);
 };
 
 module.exports.sanitize = sanitize;

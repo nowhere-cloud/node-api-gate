@@ -82,7 +82,8 @@ function onListening() {
 
 /**
  * Listen on provided port, on all network interfaces.
- * sync() will create all table if they doesn't exist in database
+ * sync() will Populate Model Relationships
+ * (Structure Creation is handled by Migrations)
  */
 models.sequelize.sync().then(() => {
   console.info('Database Structure Populated, booting UP API');

@@ -1,19 +1,19 @@
 'use strict';
 
-const express = require('express');
-const router = express.Router();
-const moment = require('moment');
+const Express = require('express');
+const Router  = Express.Router();
+const Moment  = require('moment');
 
 /* GET home page. */
-router.get('/', (req, res, next) => {
+Router.get('/', (req, res, next) => {
   res.json({
-    'start_time': moment().subtract(process.uptime().toFixed(0), 'seconds').toISOString(),
+    'start_time': Moment().subtract(process.uptime().toFixed(0), 'seconds').toISOString(),
     'uptime': process.uptime()
   });
 });
 
-router.get('/stats', (req, res, next) => {
+Router.get('/stats', (req, res, next) => {
   res.sendStatus(200);
 });
 
-module.exports = router;
+module.exports = Router;
