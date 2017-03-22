@@ -12,6 +12,16 @@ const https = require('https');
 const http = require('http');
 const Promise = require('bluebird');
 
+
+/**
+ * Check if the responsed Status code is within a Good Code Range
+ * @param {Number} HTTP Status Code 
+ */
+const check_status_code = (code) => {
+  return (code < 200 || code > 299);
+};
+
+
 /**
  * HTTP Healthcheck Helper
  * @param  {String} hostname Target Hostname
@@ -27,8 +37,8 @@ const http_health = (hostname, port, path) => {
       path: path
     }, (response) => {
       // handle http errors
-      if (response.statusCode < 200 || response.statusCode > 299) {
-        reject({ 
+      if (check_status_code(response.statusCode)) {
+        reject({
           status: response.statusCode,
           error: response.statusMessage
         });
@@ -58,8 +68,8 @@ const https_health = (hostname, port, path, unsafe) => {
       path: path
     }, (response) => {
       // handle http errors
-      if (response.statusCode < 200 || response.statusCode > 299) {
-        reject({ 
+      if (check_status_code(response.statusCode)) {
+        reject({
           status: response.statusCode,
           error: response.statusMessage
         });
