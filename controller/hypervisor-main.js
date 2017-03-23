@@ -9,7 +9,7 @@ const Router  = Express.Router();
 const vm_page = require('./hypervisor-vm');
 const api_health  = require('./hypervisor-health');
 const net_page  = require('./hypervisor-net');
-const block_page  = require('./hypervisor-block');
+const block_main_page  = require('./hypervisor-block-main');
 
 Router.get('/', (req, res, next) => {
   res.sendStatus(400);
@@ -17,7 +17,7 @@ Router.get('/', (req, res, next) => {
 
 Router.use('/vm', vm_page);
 Router.use('/net', net_page);
-Router.use('/block', block_page);
+Router.use('/block', block_main_page);
 Router.use('/stats', api_health);
 
 module.exports = Router;
