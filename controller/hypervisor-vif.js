@@ -12,7 +12,7 @@ const URL = require('url');
  */
 Router.use('/', Proxy('http://xen-rest:4567/', {
   forwardPath: (req, res) => {
-    return '/net' + URL.parse(req.url).path;
+    return '/vif' + URL.parse(req.url).path;
   },
   filter: (req, res) => {
     return req.method === 'GET';
@@ -29,11 +29,13 @@ Router.delete('/:uuid', (req, res, next) => {
 
 });
 
-Router.route('/:uuid/tags')
+Router.route('/:uuid/cable')
   .post((req, res, next) => {
+    // Plug Cable
 
   })
   .delete((req, res, next) => {
+    // Unplug Cable
 
   });
 

@@ -15,7 +15,7 @@ const Promise = require('bluebird');
 
 /**
  * Check if the responsed Status code is within a Good Code Range
- * @param {Number} HTTP Status Code 
+ * @param {Number} HTTP Status Code
  */
 const check_status_code = (code) => {
   return (code < 200 || code > 299);

@@ -2,7 +2,6 @@
 'use strict';
 
 const Express = require('express');
-const Proxy   = require('express-http-proxy');
 const Router = Express.Router();
 
 /**

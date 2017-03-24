@@ -1,8 +1,7 @@
 'use strict';
 
-const amqp = require('amqplib');
+const amqp = require('amqplib/callback_api');
 const uuid = require('uuid/v1');
-const debug = require('debug')('node-apimanager:amqp-sender');
 const Promise = require('bluebird');
 
 class Rabbit {
@@ -23,23 +22,25 @@ class Rabbit {
   send(msg) {
     let active_uuid = uuid();
     let target = this.target;
-    amqp.connect(process.env.AMQP_URI).then((conn) => {
-      return conn.createChannel().then((ch) => {
-        let q = ch.assertQueue(target, { durable: true });
-        return q.then(() => {
+    let promise = new Promise((fulfill, reject) => {
+      amqp.connect(process.env.AMQP_URI, (err, conn) => {
+        if (err) return reject(err);
+        conn.createChannel((err, ch) => {
+          if (err) return reject(err);
+          ch.assertQueue(target, { durable: true });
           ch.sendToQueue(target, new Buffer.from(JSON.stringify(msg)), {
             correlationId: active_uuid
           });
-          return ch.close();
+          ch.close();
         });
-      }).finally(() => {
         conn.close();
+        return fulfill(active_uuid);
       });
-    }).catch((err) => {
-      debug(err);
     });
-    return active_uuid;
+    return promise;
   }
+
+
 }
 
 module.exports = Rabbit;

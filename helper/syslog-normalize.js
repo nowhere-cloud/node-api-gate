@@ -8,7 +8,7 @@ const Promise = require('bluebird');
 const severity = 'Emergency Alert Critical Error Warning Notice Informational Debug'.toLowerCase().split(' ');
 
 // Facility String
-// Based on RFC3164
+// RFC3164
 const facility = [
   'kern', 'user', 'mail', 'daemon',
   'auth', 'syslog', 'lpr', 'news',
