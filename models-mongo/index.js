@@ -23,6 +23,8 @@ mongoose.connect(config);
 /**
  * Expose the Model
  */
-module.exports.mongoose = mongoose;
-module.exports.Syslog = syslog;
-module.exports.Task = task;
+module.exports = {
+  mongoose: mongoose,
+  Syslog: syslog,
+  Task: task
+};

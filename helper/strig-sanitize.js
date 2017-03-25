@@ -12,4 +12,6 @@ const sanitize = (raw_string) => {
   return Sanitizer.sanitize(raw_string);
 };
 
-module.exports.sanitize = sanitize;
+module.exports = {
+  sanitize: sanitize
+};

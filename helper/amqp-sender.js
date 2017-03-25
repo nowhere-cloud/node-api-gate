@@ -1,8 +1,9 @@
 'use strict';
 
-const amqp = require('amqplib/callback_api');
-const uuid = require('uuid/v1');
+const amqp    = require('amqplib/callback_api');
+const uuid    = require('uuid/v1');
 const Promise = require('bluebird');
+const Task    = require('../models-mongo').Task;
 
 class Rabbit {
   /**
@@ -16,11 +17,18 @@ class Rabbit {
 
   /**
    * Send Message to RabbitMQ
-   * @param  {String} msg    Message Payload
-   * @return {null}
+   * @param  {String} task    Task
+   * @param  {Any}    paylaod Job Payload
+   * @return {Promise}
    */
-  send(msg) {
-    let active_uuid = uuid();
+  send(task, payload) {
+    let msg = {
+      task: task,
+      payload: payload,
+      uuid: uuid(),
+      sent: false,
+      result: {}
+    };
     let target = this.target;
     let promise = new Promise((fulfill, reject) => {
       amqp.connect(process.env.AMQP_URI, (err, conn) => {
@@ -29,18 +37,16 @@ class Rabbit {
           if (err) return reject(err);
           ch.assertQueue(target, { durable: true });
           ch.sendToQueue(target, new Buffer.from(JSON.stringify(msg)), {
-            correlationId: active_uuid
+            correlationId: msg.uuid
           });
           ch.close();
         });
         conn.close();
-        return fulfill(active_uuid);
+        return fulfill(msg.uuid);
       });
     });
     return promise;
   }
-
-
 }
 
 module.exports = Rabbit;

@@ -46,7 +46,7 @@ app.use(function(err, req, res, next) {
   }
 
   // render the error in JSON
-  res.status(err.status || 500).send(err.error);
+  res.status(err.status || 500).send(err);
 });
 
 module.exports = app;
