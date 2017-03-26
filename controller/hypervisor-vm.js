@@ -5,7 +5,6 @@ const Express = require('express');
 const Proxy   = require('express-http-proxy');
 const Router = Express.Router();
 const URL = require('url');
-const Task   = require('../models-mongo').Task;
 const Client = require('../helper/amqp-sender');
 
 const Checker   = require('../helper/xen-check');

@@ -161,7 +161,35 @@ const vm_tag = (target_uuid, incoming) => {
     }
     fulfill({
       src_vm: target_uuid,
-      new_vm_name: sanitize(incoming.tag)
+      tag: sanitize(incoming.tag)
+    });
+  });
+  return promise;
+};
+
+/**
+ * Tag // Untag a Network
+ * @param  {String} target_uuid Target Network UUID
+ * @param  {Object} incoming    Post Body
+ * @return {Promise}
+ */
+const vnet_tag = (target_uuid, incoming) => {
+  let promise = new Promise((fulfill, reject) => {
+    if (!check_uuid_base(target_uuid)) {
+      reject({
+        status: 400,
+        error: 'INVALID_UUID'
+      });
+    }
+    if (!incoming.hasOwnProperty('tag') || incoming.tag === '') {
+      reject({
+        status: 400,
+        error: 'TAG_MISSING'
+      });
+    }
+    fulfill({
+      network: target_uuid,
+      tag: sanitize(incoming.tag)
     });
   });
   return promise;
@@ -171,7 +199,7 @@ const vm_tag = (target_uuid, incoming) => {
  * Route Preprocessor: Check if Userid is included.
  */
 const pp_userid = (req, res, next) => {
-  if (req.body.hasOwnProperty('userid')) {
+  if (req.body.hasOwnProperty('userid') && !isNaN(parseInt(req.body.userid, 10))) {
     return next();
   } else {
     res.status(403).json({
@@ -187,7 +215,8 @@ module.exports = {
   generate: {
     vm_clone_from_tpl: vm_clone_from_template,
     vm_clone: vm_clone,
-    vm_tag: vm_tag
+    vm_tag: vm_tag,
+    net_tag: vnet_tag
   },
   pp: {
     userid: pp_userid
