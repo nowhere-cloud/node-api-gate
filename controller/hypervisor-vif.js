@@ -24,22 +24,46 @@ Router.use('/', Proxy('http://xen-rest:4567/', {
   timeout: 30*1000
 }));
 
-Router.post('/create', (req, res, next) => {
-
+Router.post('/create', Checker.pp.userid, (req, res, next) => {
+  Checker.generate.vif(req.body).then((rsvp) => {
+    return Messenger.send('do.vif.create', rsvp);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
+  });
 });
 
 Router.delete('/:uuid', (req, res, next) => {
-
+  Checker.uuid(req.params.uuid).then((uuid) => {
+    return Messenger.send('do.vif.destroy', uuid);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
+  });
 });
 
 Router.route('/:uuid/cable')
   .post((req, res, next) => {
     // Plug Cable
-
+    Checker.uuid(req.params.uuid).then((uuid) => {
+      return Messenger.send('do.vif.plug', uuid);
+    }).then((rsvp) => {
+      res.json(rsvp);
+    }).catch((err) => {
+      return next(err);
+    });
   })
   .delete((req, res, next) => {
     // Unplug Cable
-
+    Checker.uuid(req.params.uuid).then((uuid) => {
+      return Messenger.send('do.vif.unplug', uuid);
+    }).then((rsvp) => {
+      res.json(rsvp);
+    }).catch((err) => {
+      return next(err);
+    });
   });
 
 module.exports = Router;

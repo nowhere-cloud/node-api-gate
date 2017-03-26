@@ -45,7 +45,7 @@ const check_uuid_promise = (raw_uuid) => {
 };
 
 /**
- * generate meaningful VM Name
+ * generate meaningful Name, For various stuffs
  * @return {String} generated string
  */
 const generate_name = () => {
@@ -56,12 +56,24 @@ const generate_name = () => {
  * Check if the given installation is within allowed distro
  * @return {Boolean} Accept?
  */
+const accpted_distro = ['debianlike', 'rhlike', 'sleslike'];
 const check_distro = (input) => {
   // Human-Readable: http://manpages.ubuntu.com/manpages/precise/man1/eliloader.1.html
   // Currently supported values are 'rhlike', 'sleslike', and 'debianlike'.
-  const accepted_val = ['debianlike', 'rhlike', 'sleslike'];
-  return accepted_val.indexOf(sanitize(input.toLowerCase())) > -1;
+  return accpted_distro.indexOf(sanitize(input.toLowerCase())) > -1;
 };
+
+/**
+ * Check if the given installation is within allowed distro
+ * @return {Boolean} Accept?
+ */
+const accepted_unit = ['M', 'G'];
+const check_unit = (input) => {
+  // Human-Readable: http://manpages.ubuntu.com/manpages/precise/man1/eliloader.1.html
+  // Currently supported values are 'rhlike', 'sleslike', and 'debianlike'.
+  return accepted_unit.indexOf(sanitize(input)) > -1;
+};
+
 
 /**
  * Create a new VM from a Template
@@ -95,7 +107,14 @@ const vm_clone_from_template = (incoming) => {
       reject({
         status: 400,
         error: 'DISTRO_NOT_SUPPORTED',
-        info: ['debianlike', 'rhlike', 'sleslike']
+        info: accpted_distro
+      });
+    }
+    if (!check_unit(incoming.disk_unit) || !check_unit(incoming.ram_unit)) {
+      reject({
+        status: 400,
+        error: 'INCORRECT_UNIT',
+        info: accepted_unit
       });
     }
     fulfill({
@@ -119,7 +138,7 @@ const vm_clone_from_template = (incoming) => {
 /**
  * Clone VM From Template
  * @param  {String} src_uuid Source VM UUID
- * @param  {Object} incoming Post Body
+ * @param  {Object} incoming express.js post body
  * @return {Promise}
  */
 const vm_clone = (src_uuid, incoming) => {
@@ -132,7 +151,7 @@ const vm_clone = (src_uuid, incoming) => {
     }
     fulfill({
       src_vm: uuid,
-      new_vm_name: incoming.vm_name === '' ? generate_name() : sanitize(incoming.vm_name),
+      new_vm_name: (incoming.hasOwnProperty('vm_name') || incoming.vm_name === '') ? generate_name() : sanitize(incoming.vm_name),
       userid: incoming.userid
     });
   });
@@ -142,7 +161,7 @@ const vm_clone = (src_uuid, incoming) => {
 /**
  * Tag // Untag a VM
  * @param  {String} target_uuid Target VM UUID
- * @param  {Object} incoming    Post Body
+ * @param  {Object} incoming    express.js post body
  * @return {Promise}
  */
 const vm_tag = (target_uuid, incoming) => {
@@ -170,7 +189,7 @@ const vm_tag = (target_uuid, incoming) => {
 /**
  * Tag // Untag a Network
  * @param  {String} target_uuid Target Network UUID
- * @param  {Object} incoming    Post Body
+ * @param  {Object} incoming    express.js post body
  * @return {Promise}
  */
 const vnet_tag = (target_uuid, incoming) => {
@@ -196,7 +215,53 @@ const vnet_tag = (target_uuid, incoming) => {
 };
 
 /**
+ * Generate VIF Creation
+ * @param  {Object} incoming    express.js post body
+ * @return {Promise}
+ */
+const vif = (incoming) => {
+  let promise = new Promise((fulfill, reject) => {
+    if (!incoming.hasOwnProperty('vnet_uuid') || !incoming.hasOwnProperty('vm_uuid') || !check_uuid_base(incoming.vnet_uuid) || !check_uuid_base(incoming.vm_uuid)) {
+      reject({
+        status: 400,
+        error: 'INVALID_UUID'
+      });
+    }
+    if (!incoming.hasOwnProperty('vm_slot') || isNaN(parseInt(incoming.vm_slot, 10)) || parseInt(incoming.vm_slot, 10) <= 0) {
+      reject({
+        status: 400,
+        error: 'INVALID_SLOT'
+      });
+    }
+    fulfill({
+      vm: incoming.vm_uuid,
+      net: incoming.vnet_uuid,
+      slot: incoming.vm_slot
+    });
+  });
+  return promise;
+};
+
+/**
+ * Generate Payload for Creating Network
+ * @param {Object} incoming 
+ * @return {Promise}
+ */
+const vnet = (incoming) => {
+  let promise = new Promise((fulfill, reject) => {
+    fulfill({
+      network_name: (incoming.hasOwnProperty('net_name') || incoming.net_name === '') ? generate_name() : sanitize(incoming.net_name),
+      userid: incoming.userid
+    });
+  });
+  return promise;
+};
+
+/**
  * Route Preprocessor: Check if Userid is included.
+ * @param {Object}  req     express.js request
+ * @param {Object}  res     express.js response
+ * @param {*}       next    express.js callback to next middleware
  */
 const pp_userid = (req, res, next) => {
   if (req.body.hasOwnProperty('userid') && !isNaN(parseInt(req.body.userid, 10))) {
@@ -216,7 +281,9 @@ module.exports = {
     vm_clone_from_tpl: vm_clone_from_template,
     vm_clone: vm_clone,
     vm_tag: vm_tag,
-    net_tag: vnet_tag
+    net: vnet,
+    net_tag: vnet_tag,
+    vif: vif
   },
   pp: {
     userid: pp_userid

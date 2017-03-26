@@ -25,9 +25,8 @@ Router.use('/', Proxy('http://xen-rest:4567/', {
 }));
 
 Router.post('/create', Checker.pp.userid, (req, res, next) => {
-  Messenger.send('do.network.create', {
-    network_name: Checker.sanitize(req.body.net_name),
-    userid: req.body.userid
+  Checker.generate.net(req.body).then((rsvp) => {
+    return Messenger.send('do.network.create', rsvp);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
