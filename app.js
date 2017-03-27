@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
  */
 const index = require('./controller/index');
 const log = require('./controller/syslog');
+const task = require('./controller/task');
 const dns = require('./controller/dns-main');
 const xen = require('./controller/hypervisor-main');
 
@@ -28,6 +29,7 @@ app.use(cookieParser());
 // Namespacing
 app.use('/', index);
 app.use('/log', log);
+app.use('/task', task);
 app.use('/dns', dns);
 app.use('/xen', xen);
 

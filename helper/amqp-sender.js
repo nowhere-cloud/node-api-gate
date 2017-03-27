@@ -29,15 +29,14 @@ class Rabbit {
       sent: false,
       result: {}
     };
-    let task_inst = new Task(msg);
     let target = this.target;
     let promise = new Promise((fulfill, reject) => {
-      task_inst.save((err) => {
-        if (err) return reject(err);
+      Task.create(msg, (err) => {
+        if (err) reject(err);
         amqp.connect(process.env.AMQP_URI, (err, conn) => {
-          if (err) return reject(err);
+          if (err) reject(err);
           conn.createChannel((err, ch) => {
-            if (err) return reject(err);
+            if (err) reject(err);
             ch.assertQueue(target, { durable: true });
             ch.sendToQueue(target, new Buffer.from(JSON.stringify(msg)), {
               correlationId: msg.uuid
@@ -45,7 +44,10 @@ class Rabbit {
             ch.close();
           });
           conn.close();
-          return fulfill(msg.uuid);
+          Task.update({ uuid: msg.uuid }, { sent: true }, (err, task) => {
+            if (err)  reject(err);
+            if (task) fulfill(task);
+          });
         });
       });
     });
