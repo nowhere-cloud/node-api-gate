@@ -57,6 +57,7 @@ Router.post('/:uuid/resize', (req, res, next) => {
   }).catch((err) => {
     return next(err);
   });
+});
 
 Router.delete('/:uuid', (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
