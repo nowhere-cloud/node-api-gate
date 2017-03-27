@@ -159,12 +159,12 @@ const vm_clone = (src_uuid, incoming) => {
 };
 
 /**
- * Tag // Untag a VM
- * @param  {String} target_uuid Target VM UUID
+ * Tag // Untag an object
+ * @param  {String} target_uuid Target Object UUID
  * @param  {Object} incoming    express.js post body
  * @return {Promise}
  */
-const vm_tag = (target_uuid, incoming) => {
+const tag = (target_uuid, incoming) => {
   let promise = new Promise((fulfill, reject) => {
     if (!check_uuid_base(target_uuid)) {
       reject({
@@ -179,35 +179,7 @@ const vm_tag = (target_uuid, incoming) => {
       });
     }
     fulfill({
-      src_vm: target_uuid,
-      tag: sanitize(incoming.tag)
-    });
-  });
-  return promise;
-};
-
-/**
- * Tag // Untag a Network
- * @param  {String} target_uuid Target Network UUID
- * @param  {Object} incoming    express.js post body
- * @return {Promise}
- */
-const vnet_tag = (target_uuid, incoming) => {
-  let promise = new Promise((fulfill, reject) => {
-    if (!check_uuid_base(target_uuid)) {
-      reject({
-        status: 400,
-        error: 'INVALID_UUID'
-      });
-    }
-    if (!incoming.hasOwnProperty('tag') || incoming.tag === '') {
-      reject({
-        status: 400,
-        error: 'TAG_MISSING'
-      });
-    }
-    fulfill({
-      network: target_uuid,
+      ref: target_uuid,
       tag: sanitize(incoming.tag)
     });
   });
@@ -219,9 +191,9 @@ const vnet_tag = (target_uuid, incoming) => {
  * @param  {Object} incoming    express.js post body
  * @return {Promise}
  */
-const vif = (incoming) => {
+const vif = (target_uuid, incoming) => {
   let promise = new Promise((fulfill, reject) => {
-    if (!incoming.hasOwnProperty('vnet_uuid') || !incoming.hasOwnProperty('vm_uuid') || !check_uuid_base(incoming.vnet_uuid) || !check_uuid_base(incoming.vm_uuid)) {
+    if (!check_uuid_base(target_uuid)) {
       reject({
         status: 400,
         error: 'INVALID_UUID'
@@ -243,8 +215,38 @@ const vif = (incoming) => {
 };
 
 /**
+ * Generate Payload for resizing VDI
+ * @param  {String} incoming_uuid UUID Value in URL.
+ * @param  {Object} incoming      express.js req.body
+ * @return {Promise}
+ */
+const vdi_resize = (incoming_uuid, incoming) => {
+  let promise = new Promise((fulfill, reject) => {
+    if (!incoming.hasOwnProperty('vnet_uuid') || !incoming.hasOwnProperty('vm_uuid') || !check_uuid_base(incoming.vnet_uuid) || !check_uuid_base(incoming.vm_uuid)) {
+      reject({
+        status: 400,
+        error: 'INVALID_UUID'
+      });
+    }
+    if (!check_unit(incoming.disk_unit)) {
+      reject({
+        status: 400,
+        error: 'INCORRECT_UNIT',
+        info: accepted_unit
+      });
+    }
+    fulfill({
+      vdi_ref: incoming.vm_uuid,
+      vdi_size: incoming.vdi_size,
+      vdi_unit: incoming.vdi_unit
+    });
+  });
+  return promise;
+};
+
+/**
  * Generate Payload for Creating Network
- * @param {Object} incoming 
+ * @param {Object} incoming
  * @return {Promise}
  */
 const vnet = (incoming) => {
@@ -280,10 +282,10 @@ module.exports = {
   generate: {
     vm_clone_from_tpl: vm_clone_from_template,
     vm_clone: vm_clone,
-    vm_tag: vm_tag,
+    tag: tag,
     net: vnet,
-    net_tag: vnet_tag,
-    vif: vif
+    vif: vif,
+    vdi_resize: vdi_resize
   },
   pp: {
     userid: pp_userid

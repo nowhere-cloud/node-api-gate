@@ -109,7 +109,7 @@ Router.post('/:uuid/rename', (req, res, next) => {
 
 Router.route('/:uuid/tags')
   .post((req, res, next) => {
-    Checker.generate.vm_tag(req.params.uuid).then((rsvp) => {
+    Checker.generate.tag(req.params.uuid).then((rsvp) => {
       return Messenger.send('set.vm.tag', rsvp);
     }).then((rsvp) => {
       res.json(rsvp);
@@ -118,7 +118,7 @@ Router.route('/:uuid/tags')
     });
   })
   .delete((req, res, next) => {
-    Checker.generate.vm_tag(req.params.uuid).then((rsvp) => {
+    Checker.generate.tag(req.params.uuid).then((rsvp) => {
       return Messenger.send('no.set.vm.tag', rsvp);
     }).then((rsvp) => {
       res.json(rsvp);

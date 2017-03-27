@@ -2,6 +2,7 @@
 
 const amqp = require('amqplib');
 const debug = require('debug')('node-apimanager:amqp-sender');
+const Task    = require('../models-mongo').Task;
 
 class Rabbit {
   constructor(uri, monitor) {
@@ -12,6 +13,10 @@ class Rabbit {
   process(msg) {
     let msgContent = JSON.parse(msg.content.toString());
     debug(' [*] RECV @ %s', msg.properties.correlationId.toString());
+    Task.update({ uuid: msg.properties.correlationId.toString() }, { result: msgContent }, (err, task) => {
+      if (err) debug(err);
+      if (task) debug(task);
+    });
   }
 
   listenQueue() {
