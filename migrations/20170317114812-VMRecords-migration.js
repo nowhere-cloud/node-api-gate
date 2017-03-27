@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = {
-  up: function (queryInterface, DataTypes) {
+  up: function (queryInterface, Sequelize) {
     return queryInterface.createTable('vm_records', {
-      uuid: { type: DataTypes.STRING(36), allowNull: false }
+      uuid: { type: Sequelize.STRING(36), allowNull: false }
     });
   },
 

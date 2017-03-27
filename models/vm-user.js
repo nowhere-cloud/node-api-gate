@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var DNS = sequelize.define('vm_records', {
+  var VM = sequelize.define('vm_records', {
     uuid: { type: DataTypes.STRING(36), allowNull: false }
   }, {
     indexes: [
@@ -12,8 +12,9 @@ module.exports = (sequelize, DataTypes) => {
     classMethods: {
       associate: function(models) {
         // associations can be defined here
+        VM.BelongsTo(models.user);
       }
     }
   });
-  return DNS;
+  return VM;
 };

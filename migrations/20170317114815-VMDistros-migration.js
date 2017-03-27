@@ -1,13 +1,13 @@
 'use strict';
 
 module.exports = {
-  up: function (queryInterface, DataTypes) {
+  up: function (queryInterface, Sequelize) {
     return queryInterface.createTable('vm_distros', {
       distroname: {
-        type: DataTypes.STRING(20)
+        type: Sequelize.STRING(20)
       },
       distro: {
-        type: DataTypes.ENUM('debianlike', 'rhlike', 'sleslike')
+        type: Sequelize.ENUM('debianlike', 'rhlike', 'sleslike')
       }
     });
   },

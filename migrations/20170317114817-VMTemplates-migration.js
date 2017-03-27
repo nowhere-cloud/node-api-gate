@@ -1,18 +1,18 @@
 'use strict';
 
 module.exports = {
-  up: function (queryInterface, DataTypes) {
+  up: function (queryInterface, Sequelize) {
     return queryInterface.createTable('vm_templates', {
       distroname: {
-        type: DataTypes.STRING(64),
+        type: Sequelize.STRING(64),
         allowNull: false
       },
       uuid: {
-        type: DataTypes.STRING(36),
+        type: Sequelize.STRING(36),
         allowNull: false
       },
       repourl : {
-        type: DataTypes.STRING(255),
+        type: Sequelize.STRING(255),
         allowNull: false
       }
     });

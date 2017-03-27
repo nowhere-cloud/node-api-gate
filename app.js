@@ -4,10 +4,14 @@ const Express = require('express');
 const Logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const session = require('express-session');
+const Models = require('./models/');
 
 /**
  * Controllers
  */
+
 const index = require('./controller/index');
 const log = require('./controller/syslog');
 const task = require('./controller/task');
@@ -25,6 +29,12 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(cookieParser());
+
+// Load Authenticator
+app.use(session({ secret: process.env.SESS_KEY }));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(Models.user.createStrategy());
 
 // Namespacing
 app.use('/', index);
