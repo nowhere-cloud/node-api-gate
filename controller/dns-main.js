@@ -25,7 +25,7 @@ const pp_json_header = (req, res, next) => {
  * for testing the MySQL is alive or dead
  */
 Router.get('/', (req, res, next) => {
-  Models.dns_records.findAll().then((rsvp) => {
+  Models.dns_record.findAll().then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
     return next(err);
@@ -59,7 +59,7 @@ Router.use('/create', create);
 Router.route('/:id')
   .get((req, res, next) => {
     Checker.normalizeid(req.params.id).then((id) => {
-      return Models.dns_records.findById(id);
+      return Models.dns_record.findById(id);
     }).then((rsvp) => {
       res.json(rsvp);
     }).catch((err) => {
@@ -73,7 +73,7 @@ Router.route('/:id')
       return Checker.checksubmit(req.body);
     }).then((parsed) => {
       obj = parsed;
-      return Models.dns_records.findById(uid);
+      return Models.dns_record.findById(uid);
     }).then((instance) => {
       return instance.update(obj);
     }).then((result) => {
@@ -83,7 +83,7 @@ Router.route('/:id')
     });
   }).delete((req, res, next) => {
     Checker.normalizeid(req.params.id).then((id) => {
-      return Models.dns_records.findById(id);
+      return Models.dns_record.findById(id);
     }).then((instance) => {
       return instance.destroy();
     }).then((result) => {

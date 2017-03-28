@@ -13,7 +13,7 @@ const Checker = require('../helper/dns-check');
  */
 Router.get('/name/:name', (req, res, next) => {
   if (Checker.domaincheck(req.params.name)) {
-    Models.dns_records.findAll({
+    Models.dns_record.findAll({
       where: {
         name: Checker.sanitize(req.params.name)
       }
@@ -33,7 +33,7 @@ Router.get('/name/:name', (req, res, next) => {
  */
 Router.get('/ipv4/:ipv4', (req, res, next) => {
   if (Checker.checkIP4(req.params.ipv4)) {
-    Models.dns_records.findAll({
+    Models.dns_record.findAll({
       where: {
         ipv4address: Checker.ip4correctForm(req.params.ipv4)
       }
@@ -53,7 +53,7 @@ Router.get('/ipv4/:ipv4', (req, res, next) => {
  */
 Router.get('/ipv6/:ipv6', (req, res, next) => {
   if (Checker.checkIP6(req.params.ipv6)) {
-    Models.dns_records.findAll({
+    Models.dns_record.findAll({
       where: {
         ipv6address: { $in: Checker.ip6possibilities(req.params.ipv6) }
       }
@@ -68,7 +68,7 @@ Router.get('/ipv6/:ipv6', (req, res, next) => {
 });
 
 Router.get('/byuser/:userid', (req,res, next) => {
-  Models.dns_records.findAll({
+  Models.dns_record.findAll({
     UserId: Checker.sanitize(req.params.userid)
   }).then((rsvp) => {
     res.json(rsvp);

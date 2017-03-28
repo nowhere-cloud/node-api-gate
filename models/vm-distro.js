@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var VMDist = sequelize.define('vm_distros', {
+  var VMDist = sequelize.define('vm_distro', {
     distroname: {
       type: DataTypes.STRING(20)
     },
@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false,
     classMethods: {
       associate: function(models) {
-        VMDist.hasMany(models.vm_templates);
+        VMDist.hasMany(models.vm_template);
       }
     }
   });

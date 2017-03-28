@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var VMTmpl = sequelize.define('vm_templates', {
+  var VMTmpl = sequelize.define('vm_template', {
     distroname: {
       type: DataTypes.STRING(64),
       allowNull: false
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     ],
     classMethods: {
       associate: function(models) {
-        VMTmpl.belongsTo(models.vm_distros, { as: 'distro_type' });
+        VMTmpl.belongsTo(models.vm_distro, { as: 'distro_type' });
       }
     }
   });

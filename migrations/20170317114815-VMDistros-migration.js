@@ -4,7 +4,8 @@ module.exports = {
   up: function (queryInterface, Sequelize) {
     return queryInterface.createTable('vm_distros', {
       distroname: {
-        type: Sequelize.STRING(20)
+        type: Sequelize.STRING(20),
+        allowNull: false
       },
       distro: {
         type: Sequelize.ENUM('debianlike', 'rhlike', 'sleslike')
