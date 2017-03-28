@@ -26,7 +26,7 @@ Router.use('/', Proxy('http://xen-rest:4567/', {
 
 Router.post('/create', Checker.pp.userid, (req, res, next) => {
   Checker.generate.vif(req.body).then((rsvp) => {
-    return Messenger.send('do.vif.create', rsvp);
+    return Messenger.send('do.vif.create', rsvp, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -34,9 +34,9 @@ Router.post('/create', Checker.pp.userid, (req, res, next) => {
   });
 });
 
-Router.delete('/:uuid', (req, res, next) => {
+Router.delete('/:uuid', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
-    return Messenger.send('do.vif.destroy', uuid);
+    return Messenger.send('do.vif.destroy', uuid, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -45,20 +45,20 @@ Router.delete('/:uuid', (req, res, next) => {
 });
 
 Router.route('/:uuid/cable')
-  .post((req, res, next) => {
+  .post(Checker.pp.userid, (req, res, next) => {
     // Plug Cable
     Checker.uuid(req.params.uuid).then((uuid) => {
-      return Messenger.send('do.vif.plug', uuid);
+      return Messenger.send('do.vif.plug', uuid, req.body.userid);
     }).then((rsvp) => {
       res.json(rsvp);
     }).catch((err) => {
       return next(err);
     });
   })
-  .delete((req, res, next) => {
+  .delete(Checker.pp.userid, (req, res, next) => {
     // Unplug Cable
     Checker.uuid(req.params.uuid).then((uuid) => {
-      return Messenger.send('do.vif.unplug', uuid);
+      return Messenger.send('do.vif.unplug', uuid, req.body.userid);
     }).then((rsvp) => {
       res.json(rsvp);
     }).catch((err) => {

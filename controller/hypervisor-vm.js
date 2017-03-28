@@ -26,7 +26,7 @@ Router.use('/', Proxy('http://xen-rest:4567/', {
 
 Router.post('/create', Checker.pp.userid, (req, res, next) => {
   Checker.generate.vm_clone_from_tpl(req.body).then((generated_payload) => {
-    return Messenger.send('do.vm.clone.from_template', generated_payload);
+    return Messenger.send('do.vm.clone.from_template', generated_payload, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -36,7 +36,7 @@ Router.post('/create', Checker.pp.userid, (req, res, next) => {
 
 Router.post('/:uuid/clone', Checker.pp.userid, (req, res, next) => {
   Checker.generate.vm_clone(req.params.uuid, req.body).then((payload) => {
-    return Messenger.send('do.vm.clone', payload);
+    return Messenger.send('do.vm.clone', payload, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -46,7 +46,7 @@ Router.post('/:uuid/clone', Checker.pp.userid, (req, res, next) => {
 
 Router.post('/:uuid/power/on', (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
-    return Messenger.send('set.vm.power_on', uuid);
+    return Messenger.send('set.vm.power_on', uuid, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -56,7 +56,7 @@ Router.post('/:uuid/power/on', (req, res, next) => {
 
 Router.post('/:uuid/power/off', (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
-    return Messenger.send('set.vm.power_off', uuid);
+    return Messenger.send('set.vm.power_off', uuid, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -66,7 +66,7 @@ Router.post('/:uuid/power/off', (req, res, next) => {
 
 Router.post('/:uuid/power/reboot', (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
-    return Messenger.send('set.vm.power_reboot', uuid);
+    return Messenger.send('set.vm.power_reboot', uuid, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -76,7 +76,7 @@ Router.post('/:uuid/power/reboot', (req, res, next) => {
 
 Router.post('/:uuid/power/suspend', (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
-    return Messenger.send('set.vm.power_suspend', uuid);
+    return Messenger.send('set.vm.power_suspend', uuid, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -86,7 +86,7 @@ Router.post('/:uuid/power/suspend', (req, res, next) => {
 
 Router.post('/:uuid/power/resume', (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
-    return Messenger.send('set.vm.power_resume', uuid);
+    return Messenger.send('set.vm.power_resume', uuid, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -99,7 +99,7 @@ Router.post('/:uuid/rename', (req, res, next) => {
     return Messenger.send('set.vm.name', {
       vm: uuid,
       name: Checker.sanitize(req.body.name)
-    });
+    }, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -110,7 +110,7 @@ Router.post('/:uuid/rename', (req, res, next) => {
 Router.route('/:uuid/tags')
   .post((req, res, next) => {
     Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('set.vm.tag', rsvp);
+      return Messenger.send('set.vm.tag', rsvp, req.body.userid);
     }).then((rsvp) => {
       res.json(rsvp);
     }).catch((err) => {
@@ -119,7 +119,7 @@ Router.route('/:uuid/tags')
   })
   .delete((req, res, next) => {
     Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('no.set.vm.tag', rsvp);
+      return Messenger.send('no.set.vm.tag', rsvp, req.body.userid);
     }).then((rsvp) => {
       res.json(rsvp);
     }).catch((err) => {

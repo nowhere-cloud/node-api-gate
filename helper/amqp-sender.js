@@ -1,9 +1,10 @@
 'use strict';
 
-const amqp    = require('amqplib/callback_api');
+const amqp    = require('amqplib');
 const uuid    = require('uuid/v1');
 const Promise = require('bluebird');
-const Task    = require('../models-mongo').Task;
+const Task_M    = require('../models-mongo').Task;
+const Task_R    = require('../models').Task;
 
 class Rabbit {
   /**
@@ -21,7 +22,7 @@ class Rabbit {
    * @param  {Any}    paylaod Job Payload
    * @return {Promise}
    */
-  send(task, payload) {
+  send(task, payload, userid) {
     let msg = {
       task: task,
       payload: payload,
@@ -31,26 +32,32 @@ class Rabbit {
     };
     let target = this.target;
     let promise = new Promise((fulfill, reject) => {
-      Task.create(msg, (err) => {
-        if (err) reject(err);
-        amqp.connect(process.env.AMQP_URI, (err, conn) => {
-          if (err) reject(err);
-          conn.createChannel((err, ch) => {
-            if (err) reject(err);
+      Task_M.create(msg).then((inst) => {
+        return Task_R.create({ uuid: inst.uuid, UserId: userid });
+      }).then(() => {
+        return amqp.connect(process.env.AMQP_URI);
+      }).then((conn) => {
+        return conn.createChannel().then((ch) => {
+          const q = ch.assertQueue(target);
+          return q.then(() => {
             ch.assertQueue(target, { durable: true });
             ch.sendToQueue(target, new Buffer.from(JSON.stringify(msg)), {
               correlationId: msg.uuid
             });
-            ch.close();
+            return ch.close();
           });
+        }).finally(() => {
           conn.close();
-          Task.update({ uuid: msg.uuid }, { sent: true }, (err, task) => {
-            if (err)  reject(err);
-            if (task) fulfill(task);
-          });
         });
+      }).then(() => {
+        return Task_M.update({ uuid: msg.uuid }, { sent: true });
+      }).then((task) => {
+        fulfill(task);
+      }).catch((err) => {
+        reject(err);
       });
     });
+
     return promise;
   }
 }

@@ -26,7 +26,7 @@ Router.use('/', Proxy('http://xen-rest:4567/', {
 
 Router.post('/create', Checker.pp.userid, (req, res, next) => {
   Checker.generate.vdi_resize(req.body).then((rsvp) => {
-    return Messenger.send('do.network.create', rsvp);
+    return Messenger.send('do.network.create', rsvp, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -36,7 +36,7 @@ Router.post('/create', Checker.pp.userid, (req, res, next) => {
 
 Router.delete('/:uuid', (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
-    return Messenger.send('do.vdi.destroy', uuid);
+    return Messenger.send('do.vdi.destroy', uuid, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
@@ -47,7 +47,7 @@ Router.delete('/:uuid', (req, res, next) => {
 Router.route('/:uuid/tags')
   .post((req, res, next) => {
     Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('set.network.tag', rsvp);
+      return Messenger.send('set.network.tag', rsvp, req.body.userid);
     }).then((rsvp) => {
       res.json(rsvp);
     }).catch((err) => {
@@ -56,7 +56,7 @@ Router.route('/:uuid/tags')
   })
   .delete((req, res, next) => {
     Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('no.set.network.tag', rsvp);
+      return Messenger.send('no.set.network.tag', rsvp, req.body.userid);
     }).then((rsvp) => {
       res.json(rsvp);
     }).catch((err) => {

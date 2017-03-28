@@ -152,7 +152,7 @@ const checksubmit = (input_object) => {
       ipv4address: ip4correctForm(input_object.ipv4address),
       ipv6address: ip6correctForm(input_object.ipv6address),
       cname: sanitize(input_object.cname),
-      UserId: sanitize(input_object.user_id)
+      UserId: sanitize(input_object.userid)
     });
   });
   return promise;
@@ -179,6 +179,22 @@ const normalize_id = (val) => {
   return promise;
 };
 
+/**
+ * Route Preprocessor: Check if Userid is included.
+ * @param {Object}  req     express.js request
+ * @param {Object}  res     express.js response
+ * @param {*}       next    express.js callback to next middleware
+ */
+const pp_userid = (req, res, next) => {
+  if (req.body.hasOwnProperty('userid') && !isNaN(parseInt(req.body.userid, 10))) {
+    return next();
+  } else {
+    res.status(403).json({
+      status: 403,
+      error: 'FORBIDDEN_USERID_MISSING'
+    });
+  }
+};
 
 module.exports = {
   sanitize: sanitize,
@@ -189,5 +205,8 @@ module.exports = {
   ip6correctForm: ip6correctForm,
   ip6possibilities: ip6possibilities,
   checksubmit: checksubmit,
-  normalizeid: normalize_id
+  normalizeid: normalize_id,
+  pp: {
+    userid: pp_userid
+  }
 };

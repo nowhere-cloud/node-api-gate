@@ -3,6 +3,7 @@
 const Express   = require('express');
 const Router    = Express.Router();
 const Mongo     = require('../models-mongo');
+const MySQL     = require('../models');
 const Normalize = require('../helper/syslog-normalize');
 
 /**
@@ -33,12 +34,23 @@ Router.get('/', pp_json_header, (req, res, next) => {
 /**
  * GET DB Stat as Status Check
  */
-Router.get('/stats', (req, res, next) => {
+Router.get('/stats/mongo', (req, res, next) => {
   if (Mongo.mongoose.connection.readyState) {
     res.sendStatus(200);
   } else {
     res.sendStatus(503);
   }
+});
+
+Router.get('/stats/mysql', (req, res, next) => {
+  MySQL.sequelize.authenticate().then(() => {
+    res.sendStatus(200);
+  }).catch((err) => {
+    next({
+      status: 503,
+      error: err
+    });
+  });
 });
 
 /**
@@ -55,6 +67,16 @@ Router.get('/task', (req, res, next) => {
   ], (err, doc) => {
     if (err) return next(err);
     res.json(doc);
+  });
+});
+
+Router.post('/task/my', (req, res, next) => {
+  MySQL.Task.findAll({
+    UserId: Normalize.sanitize(req.params.userid)
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
   });
 });
 

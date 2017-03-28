@@ -10,7 +10,7 @@ const Checker = require('../helper/dns-check');
  * Search by Name
  * @type {Object}
  */
-Router.post('/', (req, res, next) => {
+Router.post('/', Checker.pp.userid, (req, res, next) => {
   Checker.checksubmit(req.body).then((parsed) => {
     return Models.dns_record.create(parsed, {});
   }).then((result) => {

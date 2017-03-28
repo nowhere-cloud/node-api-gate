@@ -24,8 +24,8 @@ Router.use('/', Proxy('http://xen-rest:4567/', {
   timeout: 30*1000
 }));
 
-Router.post('/attach', (req, res, next) => {
-
-});
+// Router.post('/attach', (req, res, next) => {
+//
+// });
 
 module.exports = Router;
