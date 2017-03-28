@@ -67,4 +67,14 @@ Router.get('/ipv6/:ipv6', (req, res, next) => {
   }
 });
 
+Router.get('/byuser/:userid', (req,res, next) => {
+  Models.dns_records.findAll({
+    UserId: Checker.sanitize(req.params.userid)
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
+  });
+});
+
 module.exports = Router;

@@ -23,7 +23,12 @@ module.exports = (sequelize, DataTypes) => {
     ],
     classMethods: {
       associate: function(models) {
-        DNS.BelongsTo(models.user);
+        DNS.BelongsTo(models.User, {
+          onDelete: 'CASCADE',
+          foreignKey: {
+            allowNull: false
+          }
+        });
       }
     }
   });

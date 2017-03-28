@@ -6,6 +6,7 @@ const Sanitizer = require('./strig-sanitize');
  * Load Bluebird Promise Library.
  */
 const Promise = require('bluebird');
+const allow_type = ['A', 'CNAME', 'MX'];
 
 /**
  * Proxy Function of String Sanitzing
@@ -44,6 +45,13 @@ const check_ip6 = (r_ip6) => {
 const domaincheck = (raw_string) => {
   return (/^[a-zA-Z0-9][a-zA-Z0-9.-]{1,30}[a-zA-Z0-9]$/.test(sanitize(raw_string)));
 };
+
+const check_type = (input) => {
+  // Human-Readable: http://manpages.ubuntu.com/manpages/precise/man1/eliloader.1.html
+  // Currently supported values are 'rhlike', 'sleslike', and 'debianlike'.
+  return allow_type.indexOf(sanitize(input.toUpperCase())) > -1;
+};
+
 
 /**
  * Determine Kind of IP
@@ -131,12 +139,20 @@ const checksubmit = (input_object) => {
         error: 'INVALID_IP'
       });
     }
+    if (!check_type(input_object.type)) {
+      reject({
+        status: 400,
+        error: 'INVALID_TYPE',
+        info: allow_type
+      });
+    }
     fulfill({
-      type: input_object.type,
-      name: input_object.name,
+      type: sanitize(input_object.type),
+      name: sanitize(input_object.name),
       ipv4address: ip4correctForm(input_object.ipv4address),
       ipv6address: ip6correctForm(input_object.ipv6address),
-      cname: input_object.cname
+      cname: sanitize(input_object.cname),
+      UserId: sanitize(input_object.user_id)
     });
   });
   return promise;

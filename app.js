@@ -2,10 +2,7 @@
 
 const Express = require('express');
 const Logger = require('morgan');
-const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const passport = require('passport');
-const session = require('express-session');
 const Models = require('./models/');
 
 /**
@@ -28,13 +25,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-app.use(cookieParser());
-
-// Load Authenticator
-app.use(session({ secret: process.env.SESS_KEY }));
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(Models.user.createStrategy());
 
 // Namespacing
 app.use('/', index);

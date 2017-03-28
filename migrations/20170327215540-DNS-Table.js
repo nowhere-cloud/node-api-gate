@@ -7,7 +7,21 @@ module.exports = {
       name: { type: Sequelize.STRING(64), allowNull: false },
       ipv4address: { type: Sequelize.STRING(15), allowNull: true },
       ipv6address: { type:Sequelize.STRING(39), allowNull: true },
-      cname: { type: Sequelize.STRING(255), allowNull: true }
+      cname: { type: Sequelize.STRING(255), allowNull: true },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      updatedAt: Sequelize.DATE,
+      UserId: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        allowNull: false,
+        references: {
+          model: 'User',
+          key: 'id'
+        }
+      }
     });
   },
 
