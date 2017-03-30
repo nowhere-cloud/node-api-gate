@@ -10,7 +10,6 @@ module.exports = function(sequelize, DataTypes) {
         // associations can be defined here
         User.hasMany(models.vm_user);
         User.hasMany(models.dns_record);
-        User.hasMany(models.Task);
       }
     }
   });
