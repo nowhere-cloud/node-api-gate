@@ -6,16 +6,6 @@ const bodyParser = require('body-parser');
 const Models = require('./models/');
 
 /**
- * Controllers
- */
-
-const index = require('./controller/index');
-const log = require('./controller/syslog');
-const task = require('./controller/task');
-const dns = require('./controller/dns-main');
-const xen = require('./controller/hypervisor-main');
-
-/**
  * App Core
  */
 const app = Express();
@@ -26,12 +16,14 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-// Namespacing
-app.use('/', index);
-app.use('/log', log);
-app.use('/task', task);
-app.use('/dns', dns);
-app.use('/xen', xen);
+/**
+ * Controllers
+ */
+app.use('/', require('./controller/index'));
+app.use('/log', require('./controller/syslog'));
+app.use('/task', require('./controller/task'));
+app.use('/dns', require('./controller/dns-main'));
+app.use('/xen', require('./controller/hypervisor-main'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
