@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prestart": "node ./bin/block-for-mysql.js",
-    "start": "node node_modules/.bin/sequelize db:migrate",
-    "poststart": "node ./bin/www.js"
+    "prestart": "node ./bin/block-for-mysql.js && sequelize db:migrate",
+    "start": "node ./bin/www.js"
   },
   "dependencies": {
     "amqplib": "^0.5.1",
