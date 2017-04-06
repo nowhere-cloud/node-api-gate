@@ -1,23 +1,18 @@
 'use strict';
 
-const fs        = require('fs');
-const path      = require('path');
 const Sequelize = require('sequelize');
-const basename  = path.basename(module.filename);
 const db        = {};
 const env       = process.env.NODE_ENV || 'development';
 const config    = require('../config/config')[env];
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-fs
-  .readdirSync(__dirname)
-  .filter((file) => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
-  })
-  .forEach((file) => {
-    let model = sequelize['import'](path.join(__dirname, file));
-    db[model.name] = model;
-  });
+// Manual Import Models
+db.dns_record   = sequelize.import('./dns_record');
+db.Task         = sequelize.import('./task');
+db.User         = sequelize.import('./user');
+db.vm_distro    = sequelize.import('./vm-distro');
+db.vm_template  = sequelize.import('./vm-template');
+db.vm_user      = sequelize.import('./vm-user');
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
