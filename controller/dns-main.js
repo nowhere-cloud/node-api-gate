@@ -67,15 +67,11 @@ Router.route('/:id')
     });
   }).patch((req, res, next) => {
     let uid = 0;
-    let obj = {};
+    let obj = JSON.stringify(req.body);
     Checker.normalizeid(req.params.id).then((id) => {
-      uid = id;
-      return JSON.stringify(req.body);
-    }).then((stringify) => {
-      obj = JSON.parse(stringify);
-      return Models.dns_record.findById(uid);
+      return Models.dns_record.findById(id);
     }).then((instance) => {
-      return instance.update(obj);
+      return instance.update(JSON.parse(obj));
     }).then((result) => {
       res.json(result);
     }).catch((err) => {
