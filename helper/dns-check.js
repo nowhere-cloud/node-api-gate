@@ -34,7 +34,7 @@ const check_ip4 = (r_ip4) => {
  */
 const check_ip6 = (r_ip6) => {
   let ipv6 = new IP.Address6(r_ip6);
-  return ipv6.isCorrect();
+  return ipv6.isValid();
 };
 
 /**
