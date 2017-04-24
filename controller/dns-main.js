@@ -70,9 +70,9 @@ Router.route('/:id')
     let obj = {};
     Checker.normalizeid(req.params.id).then((id) => {
       uid = id;
-      return Checker.checksubmit(req.body);
-    }).then((parsed) => {
-      obj = parsed;
+      return JSON.stringify(req.body);
+    }).then((stringify) => {
+      obj = JSON.parse(stringify);
       return Models.dns_record.findById(uid);
     }).then((instance) => {
       return instance.update(obj);
