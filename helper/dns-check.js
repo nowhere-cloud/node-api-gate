@@ -133,10 +133,16 @@ const checksubmit = (input_object) => {
         error: 'INVALID_DOMAIN_NAME'
       });
     }
-    if (!check_ip4(input_object.ipv4address) || !check_ip6(input_object.ipv6address)) {
+    if (input_object.type === 'A' && (!check_ip4(input_object.ipv4address) || !check_ip6(input_object.ipv6address))) {
       reject({
         status: 400,
         error: 'INVALID_IP'
+      });
+    }
+    if ((input_object.type === 'CNAME' || input_object.type === 'MX') && input_object.cname === '') {
+      reject({
+        status: 400,
+        error: 'OPTIONS_EMPTY'
       });
     }
     if (!check_type(input_object.type)) {
