@@ -69,7 +69,9 @@ Router.get('/ipv6/:ipv6', (req, res, next) => {
 
 Router.get('/byuser/:userid', (req,res, next) => {
   Models.dns_record.findAll({
-    UserId: Checker.sanitize(req.params.userid)
+    where: {
+      UserId: Checker.sanitize(req.params.userid)
+    }
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
