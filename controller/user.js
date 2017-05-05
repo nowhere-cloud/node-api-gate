@@ -97,4 +97,4 @@ Router.get('/byusername/:uid', (req, res, next) => {
   });
 });
 
-module.exports = {};
+module.exports = Router;
