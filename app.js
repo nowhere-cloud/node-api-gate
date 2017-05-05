@@ -20,10 +20,6 @@ app.use(bodyParser.urlencoded({
  * Controllers
  */
 app.use('/', require('./controller/index'));
-app.use('/log', require('./controller/syslog'));
-app.use('/task', require('./controller/task'));
-app.use('/dns', require('./controller/dns-main'));
-app.use('/xen', require('./controller/hypervisor-main'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

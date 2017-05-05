@@ -16,4 +16,10 @@ Router.get('/stats', (req, res, next) => {
   res.sendStatus(200);
 });
 
+Router.use('/log', require('./syslog'));
+Router.use('/task', require('./task'));
+Router.use('/dns', require('./dns-main'));
+Router.use('/xen', require('./hypervisor-main'));
+Router.use('/user', require('./user'));
+
 module.exports = Router;
