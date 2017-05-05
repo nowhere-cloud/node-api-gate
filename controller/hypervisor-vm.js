@@ -44,7 +44,7 @@ Router.post('/:uuid/clone', Checker.pp.userid, (req, res, next) => {
   });
 });
 
-Router.post('/:uuid/power/on', (req, res, next) => {
+Router.post('/:uuid/power_on', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('set.vm.power_on', uuid, req.body.userid);
   }).then((rsvp) => {
@@ -54,7 +54,7 @@ Router.post('/:uuid/power/on', (req, res, next) => {
   });
 });
 
-Router.post('/:uuid/power/off', (req, res, next) => {
+Router.post('/:uuid/power_off', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('set.vm.power_off', uuid, req.body.userid);
   }).then((rsvp) => {
@@ -64,7 +64,7 @@ Router.post('/:uuid/power/off', (req, res, next) => {
   });
 });
 
-Router.post('/:uuid/power/reboot', (req, res, next) => {
+Router.post('/:uuid/power_reboot', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('set.vm.power_reboot', uuid, req.body.userid);
   }).then((rsvp) => {
@@ -74,7 +74,7 @@ Router.post('/:uuid/power/reboot', (req, res, next) => {
   });
 });
 
-Router.post('/:uuid/power/suspend', (req, res, next) => {
+Router.post('/:uuid/power_suspend', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('set.vm.power_suspend', uuid, req.body.userid);
   }).then((rsvp) => {
@@ -84,7 +84,7 @@ Router.post('/:uuid/power/suspend', (req, res, next) => {
   });
 });
 
-Router.post('/:uuid/power/resume', (req, res, next) => {
+Router.post('/:uuid/power_resume', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('set.vm.power_resume', uuid, req.body.userid);
   }).then((rsvp) => {
@@ -94,7 +94,7 @@ Router.post('/:uuid/power/resume', (req, res, next) => {
   });
 });
 
-Router.post('/:uuid/rename', (req, res, next) => {
+Router.post('/:uuid/name', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('set.vm.name', {
       vm: uuid,
@@ -107,24 +107,24 @@ Router.post('/:uuid/rename', (req, res, next) => {
   });
 });
 
-Router.route('/:uuid/tags')
-  .post((req, res, next) => {
-    Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('set.vm.tag', rsvp, req.body.userid);
-    }).then((rsvp) => {
-      res.json(rsvp);
-    }).catch((err) => {
-      return next(err);
-    });
-  })
-  .delete((req, res, next) => {
-    Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('no.set.vm.tag', rsvp, req.body.userid);
-    }).then((rsvp) => {
-      res.json(rsvp);
-    }).catch((err) => {
-      return next(err);
-    });
+Router.post('/:uuid/tag', Checker.pp.userid, (req, res, next) => {
+  Checker.generate.tag(req.params.uuid).then((rsvp) => {
+    return Messenger.send('set.vm.tag', rsvp, req.body.userid);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
   });
+});
+
+Router.post('/:uuid/tag/rm', Checker.pp.userid, (req, res, next) => {
+  Checker.generate.tag(req.params.uuid).then((rsvp) => {
+    return Messenger.send('no.set.vm.tag', rsvp, req.body.userid);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
+  });
+});
 
 module.exports = Router;

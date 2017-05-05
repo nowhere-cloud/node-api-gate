@@ -34,7 +34,7 @@ Router.post('/create', Checker.pp.userid, (req, res, next) => {
   });
 });
 
-Router.delete('/:uuid', (req, res, next) => {
+Router.post('/:uuid/delete', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('do.vdi.destroy', uuid, req.body.userid);
   }).then((rsvp) => {
@@ -44,24 +44,24 @@ Router.delete('/:uuid', (req, res, next) => {
   });
 });
 
-Router.route('/:uuid/tags')
-  .post((req, res, next) => {
-    Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('set.network.tag', rsvp, req.body.userid);
-    }).then((rsvp) => {
-      res.json(rsvp);
-    }).catch((err) => {
-      return next(err);
-    });
-  })
-  .delete((req, res, next) => {
-    Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('no.set.network.tag', rsvp, req.body.userid);
-    }).then((rsvp) => {
-      res.json(rsvp);
-    }).catch((err) => {
-      return next(err);
-    });
+Router.post('/:uuid/tag', Checker.pp.userid, (req, res, next) => {
+  Checker.generate.tag(req.params.uuid).then((rsvp) => {
+    return Messenger.send('set.network.tag', rsvp, req.body.userid);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
   });
+});
+
+Router.post('/:uuid/tag/rm', Checker.pp.userid, (req, res, next) => {
+  Checker.generate.tag(req.params.uuid).then((rsvp) => {
+    return Messenger.send('no.set.network.tag', rsvp, req.body.userid);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
+  });
+});
 
 module.exports = Router;

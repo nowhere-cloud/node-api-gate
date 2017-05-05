@@ -34,7 +34,7 @@ Router.post('/create', Checker.pp.userid, (req, res, next) => {
   });
 });
 
-Router.delete('/:uuid', Checker.pp.userid, (req, res, next) => {
+Router.post('/:uuid/delete', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('do.vif.destroy', uuid, req.body.userid);
   }).then((rsvp) => {
@@ -44,26 +44,26 @@ Router.delete('/:uuid', Checker.pp.userid, (req, res, next) => {
   });
 });
 
-Router.route('/:uuid/cable')
-  .post(Checker.pp.userid, (req, res, next) => {
-    // Plug Cable
-    Checker.uuid(req.params.uuid).then((uuid) => {
-      return Messenger.send('do.vif.plug', uuid, req.body.userid);
-    }).then((rsvp) => {
-      res.json(rsvp);
-    }).catch((err) => {
-      return next(err);
-    });
-  })
-  .delete(Checker.pp.userid, (req, res, next) => {
-    // Unplug Cable
-    Checker.uuid(req.params.uuid).then((uuid) => {
-      return Messenger.send('do.vif.unplug', uuid, req.body.userid);
-    }).then((rsvp) => {
-      res.json(rsvp);
-    }).catch((err) => {
-      return next(err);
-    });
+Router.post('/:uuid/plug', Checker.pp.userid, (req, res, next) => {
+  // Plug Cable
+  Checker.uuid(req.params.uuid).then((uuid) => {
+    return Messenger.send('do.vif.plug', uuid, req.body.userid);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
   });
+});
+
+Router.post('/:uuid/unplug', Checker.pp.userid, (req, res, next) => {
+  // Unplug Cable
+  Checker.uuid(req.params.uuid).then((uuid) => {
+    return Messenger.send('do.vif.unplug', uuid, req.body.userid);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
+  });
+});
 
 module.exports = Router;

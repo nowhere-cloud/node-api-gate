@@ -29,26 +29,6 @@ Router.route('/create', (req, res, next) => {
   res.sendStatus(400);
 });
 
-Router.route('/:uuid/tags')
-  .post(Checker.pp.userid, (req, res, next) => {
-    Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('set.network.tag', rsvp, req.body.userid);
-    }).then((rsvp) => {
-      res.json(rsvp);
-    }).catch((err) => {
-      return next(err);
-    });
-  })
-  .delete(Checker.pp.userid, (req, res, next) => {
-    Checker.generate.tag(req.params.uuid).then((rsvp) => {
-      return Messenger.send('no.set.network.tag', rsvp, req.body.userid);
-    }).then((rsvp) => {
-      res.json(rsvp);
-    }).catch((err) => {
-      return next(err);
-    });
-  });
-
 Router.post('/:uuid/resize', Checker.pp.userid, (req, res, next) => {
   Checker.generate.vdi_resize(req.params.uuid, req.body).then((rsvp) => {
     return Messenger.send('do.vdi.resize', rsvp, req.body.userid);
@@ -59,9 +39,29 @@ Router.post('/:uuid/resize', Checker.pp.userid, (req, res, next) => {
   });
 });
 
-Router.delete('/:uuid', Checker.pp.userid, (req, res, next) => {
+Router.post('/:uuid/delete', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('do.network.destroy', uuid, req.body.userid);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
+  });
+});
+
+Router.post('/:uuid/tag', Checker.pp.userid, (req, res, next) => {
+  Checker.generate.tag(req.params.uuid).then((rsvp) => {
+    return Messenger.send('set.network.tag', rsvp, req.body.userid);
+  }).then((rsvp) => {
+    res.json(rsvp);
+  }).catch((err) => {
+    return next(err);
+  });
+});
+
+Router.post('/:uuid/tag/rm', Checker.pp.userid, (req, res, next) => {
+  Checker.generate.tag(req.params.uuid).then((rsvp) => {
+    return Messenger.send('no.set.network.tag', rsvp, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
   }).catch((err) => {
