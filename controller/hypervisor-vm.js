@@ -25,7 +25,7 @@ Router.use('/', Proxy('http://xen-rest:4567/', {
 }));
 
 Router.post('/create', Checker.pp.userid, (req, res, next) => {
-  Checker.generate.vm_clone_from_tpl(req.body).then((generated_payload) => {
+  Checker.generate.vm_clone_from_tpl(req.body.payload).then((generated_payload) => {
     return Messenger.send('do.vm.clone.from_template', generated_payload, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
@@ -35,7 +35,7 @@ Router.post('/create', Checker.pp.userid, (req, res, next) => {
 });
 
 Router.post('/:uuid/clone', Checker.pp.userid, (req, res, next) => {
-  Checker.generate.vm_clone(req.params.uuid, req.body).then((payload) => {
+  Checker.generate.vm_clone(req.params.uuid, req.body.payload).then((payload) => {
     return Messenger.send('do.vm.clone', payload, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
@@ -98,7 +98,7 @@ Router.post('/:uuid/name', Checker.pp.userid, (req, res, next) => {
   Checker.uuid(req.params.uuid).then((uuid) => {
     return Messenger.send('set.vm.name', {
       vm: uuid,
-      name: Checker.sanitize(req.body.name)
+      name: Checker.sanitize(req.body.payload.name)
     }, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
@@ -108,7 +108,7 @@ Router.post('/:uuid/name', Checker.pp.userid, (req, res, next) => {
 });
 
 Router.post('/:uuid/tag', Checker.pp.userid, (req, res, next) => {
-  Checker.generate.tag(req.params.uuid).then((rsvp) => {
+  Checker.generate.tag(req.params.uuid, req.body.payload).then((rsvp) => {
     return Messenger.send('set.vm.tag', rsvp, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
@@ -118,7 +118,7 @@ Router.post('/:uuid/tag', Checker.pp.userid, (req, res, next) => {
 });
 
 Router.post('/:uuid/tag/rm', Checker.pp.userid, (req, res, next) => {
-  Checker.generate.tag(req.params.uuid).then((rsvp) => {
+  Checker.generate.tag(req.params.uuid, req.body.payload).then((rsvp) => {
     return Messenger.send('no.set.vm.tag', rsvp, req.body.userid);
   }).then((rsvp) => {
     res.json(rsvp);
