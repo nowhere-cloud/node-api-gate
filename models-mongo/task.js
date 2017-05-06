@@ -15,6 +15,7 @@ const vm_task = new Schema({
   payload: Schema.Types.Mixed,
   uuid: String,
   sent: Boolean,
+  user: Number,
   result: Schema.Types.Mixed
 });
 

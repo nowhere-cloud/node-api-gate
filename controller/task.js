@@ -34,23 +34,12 @@ Router.get('/', pp_json_header, (req, res, next) => {
 /**
  * GET DB Stat as Status Check
  */
-Router.get('/stats/mongo', (req, res, next) => {
+Router.get('/stats', (req, res, next) => {
   if (Mongo.mongoose.connection.readyState) {
     res.sendStatus(200);
   } else {
     res.sendStatus(503);
   }
-});
-
-Router.get('/stats/mysql', (req, res, next) => {
-  MySQL.sequelize.authenticate().then(() => {
-    res.sendStatus(200);
-  }).catch((err) => {
-    next({
-      status: 503,
-      error: err
-    });
-  });
 });
 
 /**
@@ -70,12 +59,18 @@ Router.get('/task', (req, res, next) => {
   });
 });
 
-Router.post('/task/my', (req, res, next) => {
-  MySQL.Task.findAll({
-    UserId: Normalize.sanitize(req.params.userid)
-  }).then((rsvp) => {
-    res.json(rsvp);
-  }).catch((err) => {
+Router.post('/task/byuid/:uid', (req, res, next) => {
+  let index = 0;
+  let stream = Mongo.Syslog.find({
+    'user': Normalize.sanitize(req.params.uid)
+  }, null, { sort: { $natural: 1 } }).lean().cursor();
+  res.write('[');
+  stream.on('data', (doc) => {
+    res.write((!(index++) ? '' : ',') + JSON.stringify(doc));
+  }).on('end', () => {
+    res.write(']');
+    res.end();
+  }).on('error', (err) => {
     return next(err);
   });
 });

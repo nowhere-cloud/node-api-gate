@@ -4,7 +4,6 @@ const amqp    = require('amqplib');
 const uuid    = require('uuid/v1');
 const Promise = require('bluebird');
 const Task_M    = require('../models-mongo').Task;
-const Task_R    = require('../models').Task;
 
 class Rabbit {
   /**
@@ -28,13 +27,12 @@ class Rabbit {
       payload: payload,
       uuid: uuid(),
       sent: false,
+      user: userid,
       result: {}
     };
     let target = this.target;
     let promise = new Promise((fulfill, reject) => {
-      Task_M.create(msg).then((inst) => {
-        return Task_R.create({ uuid: inst.uuid, UserId: userid });
-      }).then(() => {
+      Task_M.create(msg).then(() => {
         return amqp.connect(process.env.AMQP_URI);
       }).then((conn) => {
         return conn.createChannel().then((ch) => {
