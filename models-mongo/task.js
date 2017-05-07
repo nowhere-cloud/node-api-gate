@@ -17,6 +17,8 @@ const vm_task = new Schema({
   sent: Boolean,
   user: Number,
   result: Schema.Types.Mixed
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Tasks', vm_task);
