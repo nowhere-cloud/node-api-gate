@@ -9,9 +9,6 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 // Manual Import Models
 db.dns_record   = sequelize.import('./dns_record');
 db.User         = sequelize.import('./user');
-db.vm_distro    = sequelize.import('./vm-distro');
-db.vm_template  = sequelize.import('./vm-template');
-db.vm_user      = sequelize.import('./vm-user');
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
