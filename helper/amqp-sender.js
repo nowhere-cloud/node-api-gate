@@ -49,8 +49,10 @@ class Rabbit {
         });
       }).then(() => {
         return Task_M.update({ uuid: msg.uuid }, { sent: true });
-      }).then((task) => {
-        fulfill(task);
+      }).then(() => {
+        fulfill({
+          task: msg.uuid
+        });
       }).catch((err) => {
         reject(err);
       });
