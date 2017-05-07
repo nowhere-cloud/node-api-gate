@@ -3,7 +3,6 @@
 
 const Promise = require('bluebird');
 const Sanitizer = require('./strig-sanitize');
-const uuid = require('uuid-validate');
 const URL = require('url');
 const randomWords = require('random-words');
 
@@ -18,11 +17,12 @@ const sanitize = (raw_string) => {
 
 /**
  * Validate if the incomping UUID is valid or not. (Callback)
+ * The type of uuid used on xenserver is not-really-standard, fallback to regex
  * @param  {String} raw_uuid UUID String to be checked
  * @return {Boolean}         Is this UUID Correct?
  */
 const check_uuid_base = (raw_uuid) => {
-  return uuid(raw_uuid);
+  return /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(raw_uuid);
 };
 
 /**
