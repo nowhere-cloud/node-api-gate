@@ -16,7 +16,7 @@ const vm_task = new Schema({
   uuid: String,
   sent: Boolean,
   user: Number,
-  result: Schema.Types.Mixed
+  result: {}
 }, {
   timestamps: true,
   mimimize: false // To Save Empty Objects!!!
