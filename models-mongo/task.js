@@ -19,7 +19,7 @@ const vm_task = new Schema({
   result: {}
 }, {
   timestamps: true,
-  mimimize: false // To Save Empty Objects!!!
+  minimize: false // To Save Empty Objects!!!
 });
 
 module.exports = mongoose.model('Tasks', vm_task);

@@ -28,9 +28,7 @@ class Rabbit {
       uuid: uuid(),
       sent: false,
       user: userid,
-      result: {
-        Status: 'Unknown'
-      }
+      result: {}
     };
     let target = this.target;
     let promise = new Promise((fulfill, reject) => {
