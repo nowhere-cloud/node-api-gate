@@ -42,14 +42,10 @@ Router.get('/stats', (req, res, next) => {
   }
 });
 
-/**
- * Get Tags of entries in the Syalog Collection
- * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
- */
-Router.get('/task', (req, res, next) => {
+Router.get('/byuid/stats', (req, res, next) => {
   Mongo.Syslog.aggregate([
     { $group: {
-      _id: '$task',
+      _id: '$user',
       count: { $sum: 1 }
     }},
     { $sort: { 'count': -1 } }
@@ -59,7 +55,7 @@ Router.get('/task', (req, res, next) => {
   });
 });
 
-Router.post('/task/byuid/:uid', (req, res, next) => {
+Router.get('/byuid/:uid', (req, res, next) => {
   let index = 0;
   let stream = Mongo.Syslog.find({
     'user': Normalize.sanitize(req.params.uid)
@@ -75,7 +71,24 @@ Router.post('/task/byuid/:uid', (req, res, next) => {
   });
 });
 
-Router.get('/task/:task', pp_json_header, (req, res, next) => {
+/**
+ * Get Tags of entries in the Syalog Collection
+ * http://stackoverflow.com/questions/6043847/how-do-i-query-for-distinct-values-in-mongoose
+ */
+Router.get('/bytask/stats', (req, res, next) => {
+  Mongo.Syslog.aggregate([
+    { $group: {
+      _id: '$task',
+      count: { $sum: 1 }
+    }},
+    { $sort: { 'count': -1 } }
+  ], (err, doc) => {
+    if (err) return next(err);
+    res.json(doc);
+  });
+});
+
+Router.get('/bytask/:task', pp_json_header, (req, res, next) => {
   let index = 0;
   let stream = Mongo.Syslog.find({
     'task': Normalize.sanitize(req.params.task)
