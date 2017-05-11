@@ -36,9 +36,8 @@ class Rabbit {
         return amqp.connect(process.env.AMQP_URI);
       }).then((conn) => {
         return conn.createChannel().then((ch) => {
-          const q = ch.assertQueue(target);
-          return q.then(() => {
-            ch.assertQueue(target, { durable: true });
+          let ok = ch.assertQueue(target, { durable: true });
+          return ok.then(() => {
             ch.sendToQueue(target, new Buffer.from(JSON.stringify(msg)), {
               correlationId: msg.uuid
             });
