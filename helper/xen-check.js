@@ -150,7 +150,7 @@ const vm_clone = (src_uuid, incoming) => {
       });
     }
     fulfill({
-      src_vm: uuid,
+      src_vm: src_uuid,
       new_vm_name: (incoming.hasOwnProperty('vm_name') || incoming.vm_name === '') ? generate_name() : sanitize(incoming.vm_name),
       userid: incoming.userid
     });
